@@ -235,7 +235,19 @@ footer { padding: 35px 5vw; display: flex; justify-content: space-between; align
   .terminal-map { height: 405px; }.terminal-map > svg { width: 125%; }.route-card { left: 10px; right: 10px; bottom: 10px; }.zoom-tools { right: 9px; top: 72px; }.position-status { left: 9px; top: 9px; }.turn-instruction { left: 9px; right: 9px; top: 58px; transform: none; min-width: 0; }
   .flight-strip { margin: 0 18px; grid-template-columns: 1fr 1fr; gap: 16px; padding: 18px; }.flight-main { grid-column: 1/-1; }.flight-detail { padding-left: 0; border-left: 0; border-top: 1px solid rgba(255,255,255,.12); padding-top: 12px; }.flight-detail:nth-of-type(3) { display: none; }
   .shop-section { padding: 55px 18px 70px; }.section-heading { align-items: stretch; flex-direction: column; }.shop-search { width: 100%; }
-  .merchant-grid { grid-template-columns: 1fr; }.merchant-visual { height: 210px; }.category { min-width: 105px; }
+  .merchant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .merchant-visual { height: 104px; }
+  .merchant-visual::after { width: 72px; height: 72px; box-shadow: 0 0 0 13px rgba(255,255,255,.1), 0 0 0 26px rgba(255,255,255,.08); }
+  .merchant-visual .product-symbol { font-size: 30px; }
+  .discount-tag { left: 6px; top: 6px; padding: 4px 5px; font-size: 6px; max-width: calc(100% - 12px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .merchant-body { padding: 10px; }
+  .merchant-meta { display: block; font-size: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .merchant-meta .rating { display: block; margin-top: 4px; }
+  .merchant-body h3 { margin: 7px 0 3px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .merchant-body p { min-height: 26px; font-size: 8px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .merchant-actions { gap: 4px; margin-top: 9px; }
+  .merchant-actions button { min-width: 0; padding: 7px 2px; font-size: 7px; white-space: nowrap; }
+  .category { min-width: 105px; }
   .services-section { padding: 65px 18px; gap: 30px; }.service-list { grid-template-columns: 1fr; }.service-list button { grid-template-columns: auto 1fr auto; align-items: center; }.service-icon { grid-column: 1; grid-row: 1/3; margin: 0 8px 0 0; }.service-list small { grid-column: 2; }.service-list i { grid-column: 3; grid-row: 1/3; }
   footer { padding: 25px 18px; }.footer > span, footer > span { display: none; }
   .review-modal { padding: 25px 18px; max-height: 94vh; }.review-score { flex-wrap: wrap; }.review-score small { margin-left: 0; }
