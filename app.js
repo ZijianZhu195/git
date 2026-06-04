@@ -39,7 +39,10 @@ const indoorDestinations = {
   "南京大牌档": { node: "I", floor: "3F" },
   "茶颜悦色": { node: "G", floor: "3F" },
   "先锋书店": { node: "E", floor: "3F" },
-  "苏味集": { node: "F", floor: "3F" }
+  "苏味集": { node: "F", floor: "3F" },
+  "行李寄存处": { node: "I", floor: "2F" },
+  "充电设施": { node: "C", floor: "3F" },
+  "母婴室": { node: "E", floor: "3F" }
 };
 
 const floorVisuals = {
@@ -315,6 +318,19 @@ function showToast(message) {
 function focusIndoorMap() {
   $(".map-card").scrollIntoView({ behavior: "smooth", block: "center" });
 }
+
+$$("[data-service-destination]").forEach((button) => button.addEventListener("click", () => {
+  const destination = button.dataset.serviceDestination;
+  const details = {
+    "行李寄存处": "2F 到达大厅西侧 · 服务台 L2-08",
+    "充电设施": "3F 中央候机区 · 充电岛 C-03",
+    "母婴室": "3F 31号登机口旁 · 房间 N-31"
+  };
+  $$(".service-list button").forEach((item) => item.classList.toggle("route-ready", item === button));
+  planIndoorRoute(destination, details[destination]);
+  focusIndoorMap();
+  showToast(language === "zh" ? `已规划前往${destination}的室内路线` : `Indoor route to ${destination} ready`);
+}));
 
 function setFlight(code) {
   const normalized = code.trim().toUpperCase();

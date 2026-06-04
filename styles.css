@@ -205,6 +205,8 @@ h2 { font-size: clamp(30px, 3.6vw, 52px); letter-spacing: -.05em; line-height: 1
 .service-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .service-list button { border: 1px solid rgba(18,48,59,.1); background: rgba(255,255,255,.52); padding: 25px 18px; text-align: left; display: grid; grid-template-columns: 1fr auto; gap: 6px; color: var(--ink); transition: .2s; }
 .service-list button:hover { background: white; transform: translateY(-3px); }
+.service-list button:active { transform: translateY(0) scale(.98); }
+.service-list button.route-ready { background: white; border-color: var(--orange); box-shadow: 0 10px 24px rgba(18,48,59,.09); }
 .service-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--teal); color: white; display: grid; place-items: center; font-size: 11px; grid-column: 1/-1; margin-bottom: 12px; }
 .service-list b { font-size: 13px; }.service-list small { grid-column: 1/-1; color: var(--muted); font-size: 9px; }.service-list i { grid-column: 2; grid-row: 2; color: var(--orange); font-style: normal; }
 footer { padding: 35px 5vw; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 9px; }
