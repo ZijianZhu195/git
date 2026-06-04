@@ -103,6 +103,7 @@ h1 em { color: var(--teal); font-style: normal; }
 .real-nav-actions button:last-child { background: var(--teal); color: white; }
 
 .map-card { min-width: 0; border: 1px solid rgba(13,83,102,.13); background: #edf1ec; box-shadow: var(--shadow); border-radius: 8px; overflow: hidden; position: relative; }
+.map-card.service-focused { box-shadow: 0 0 0 3px rgba(232,117,61,.24), var(--shadow); }
 .map-toolbar { height: 62px; background: rgba(255,255,255,.83); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; padding: 0 18px; }
 .map-toolbar > div:first-child { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; }
 .map-toolbar strong { color: var(--ink); font-size: 12px; margin-left: 8px; }
@@ -126,6 +127,14 @@ h1 em { color: var(--teal); font-style: normal; }
 @keyframes pulse { 50% { transform: scale(1.28); opacity: .3; } }
 .gate-label rect { fill: var(--ink); stroke: none; }
 .gate-label text { fill: white; stroke: none; font-size: 12px; font-weight: 700; }
+.service-map-marker { display: none; filter: drop-shadow(0 7px 7px rgba(18,48,59,.2)); }
+.service-map-marker.show { display: block; animation: marker-pop .35s ease-out; }
+.service-map-marker > circle { fill: var(--teal); stroke: white; stroke-width: 4; }
+.service-map-marker .service-marker-icon { fill: white; stroke: none; font-size: 11px; font-weight: 800; }
+.service-marker-label rect { fill: white; stroke: var(--teal); stroke-width: 1; }
+.service-marker-label text { fill: var(--ink); stroke: none; font-size: 9px; font-weight: 700; }
+.service-marker-label text:last-child { fill: var(--muted); font-size: 7px; font-weight: 500; }
+@keyframes marker-pop { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
 .map-place circle { fill: white; stroke: #bdd0c8; stroke-width: 2; }
 .map-place text { fill: #758b83; stroke: none; font-size: 11px; }
 .zone-label { fill: #8d9f99; stroke: none; font-size: 11px; font-weight: 700; letter-spacing: .08em; }

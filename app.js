@@ -129,6 +129,7 @@ let activeIndoorRoute = [];
 let indoorNavigationTimer = null;
 let selectedReviewStars = 5;
 let activeReviewShop = "";
+let activeServiceDestination = "";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -319,6 +320,27 @@ function focusIndoorMap() {
   $(".map-card").scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+function showServiceOnMap(destination) {
+  const serviceDetails = {
+    "行李寄存处": { icon: "行", address: "服务台 L2-08", node: "I", floor: "2F" },
+    "充电设施": { icon: "充", address: "充电岛 C-03", node: "C", floor: "3F" },
+    "母婴室": { icon: "母", address: "房间 N-31", node: "E", floor: "3F" }
+  };
+  const service = serviceDetails[destination];
+  const point = indoorGraph[service.node];
+  activeServiceDestination = destination;
+  switchFloor(service.floor);
+  $("#serviceMapMarker").setAttribute("transform", `translate(${point.x} ${point.y})`);
+  $("#serviceMapMarker").classList.remove("show");
+  requestAnimationFrame(() => $("#serviceMapMarker").classList.add("show"));
+  $(".service-marker-icon").textContent = service.icon;
+  $("#serviceMarkerName").textContent = destination;
+  $("#serviceMarkerAddress").textContent = `${service.floor} · ${service.address}`;
+  $(".map-card").classList.add("service-focused");
+  clearTimeout(window.serviceFocusTimer);
+  window.serviceFocusTimer = setTimeout(() => $(".map-card").classList.remove("service-focused"), 2400);
+}
+
 $$("[data-service-destination]").forEach((button) => button.addEventListener("click", () => {
   const destination = button.dataset.serviceDestination;
   const details = {
@@ -328,6 +350,7 @@ $$("[data-service-destination]").forEach((button) => button.addEventListener("cl
   };
   $$(".service-list button").forEach((item) => item.classList.toggle("route-ready", item === button));
   planIndoorRoute(destination, details[destination]);
+  showServiceOnMap(destination);
   focusIndoorMap();
   showToast(language === "zh" ? `已规划前往${destination}的室内路线` : `Indoor route to ${destination} ready`);
 }));
@@ -341,6 +364,8 @@ function setFlight(code) {
   }
   activeFlight = normalized;
   activeRealDestination = "airport";
+  activeServiceDestination = "";
+  $("#serviceMapMarker").classList.remove("show");
   $("#flightInput").value = normalized;
   $("#currentFlight").textContent = normalized;
   $("#flightRoute").textContent = language === "zh" ? flight.route : flight.routeEn;
@@ -428,6 +453,11 @@ $$("[data-amap-destination]").forEach((button) => button.addEventListener("click
 $("#startIndoorNavigation").addEventListener("click", startIndoorNavigation);
 $$(".floor-switch button").forEach((button) => button.addEventListener("click", () => {
   switchFloor(button.dataset.floor);
+  if (activeServiceDestination && indoorDestinations[activeServiceDestination].floor === button.dataset.floor) {
+    showServiceOnMap(activeServiceDestination);
+  } else {
+    $("#serviceMapMarker").classList.remove("show");
+  }
   showToast(language === "zh" ? `正在查看 T2 · ${button.dataset.floor} 虚拟楼层` : `Viewing virtual T2 · ${button.dataset.floor}`);
 }));
 
