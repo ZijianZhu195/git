@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b4054">
+  <meta name="description" content="南京禄口机场手机导航、航班登机口引导与机场周边搜索">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>禄口畅行 · 机场导航与购物</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="禄口畅行首页">
+        <span class="brand-mark">NKG</span>
+        <span>
+          <b data-i18n="brand">禄口畅行</b>
+          <small>NANJING AIRPORT</small>
+        </span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="主导航">
+        <a class="active" href="#navigation" data-i18n="navGuide">机场导航</a>
+        <a href="#shops" data-i18n="navShops">机场周边</a>
+        <a href="#services" data-i18n="navServices">出行服务</a>
+      </nav>
+
+      <div class="top-actions">
+        <button class="icon-button" id="locationButton" aria-label="获取当前位置" title="获取当前位置">
+          <svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-13v4l3 2"/></svg>
+        </button>
+        <button class="language-button" id="languageButton" aria-label="切换语言">
+          <span>中</span><i></i><span>EN</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="home">
+      <section class="hero-section" id="navigation">
+        <div class="hero-copy">
+          <div class="eyebrow"><span></span><span data-i18n="eyebrow">南京禄口国际机场 · T2</span></div>
+          <h1><span data-i18n="heroLine1">从这里，</span><br><em data-i18n="heroLine2">从容抵达每一程。</em></h1>
+          <p data-i18n="heroDesc">输入航班号，即刻查看航班动态与登机口路线。机场再大，也不绕路。</p>
+
+          <form class="flight-search" id="flightForm">
+            <div class="search-icon">
+              <svg viewBox="0 0 24 24"><path d="m21 21-4.3-4.3m2.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
+            </div>
+            <label>
+              <span data-i18n="flightLabel">输入航班号</span>
+              <input id="flightInput" type="text" value="MU2881" placeholder="例如 MU2881" autocomplete="off">
+            </label>
+            <button type="submit" data-i18n="startNav">开始导航</button>
+          </form>
+
+          <div class="quick-flights">
+            <span data-i18n="recent">最近查询</span>
+            <button data-flight="MU2881">MU2881</button>
+            <button data-flight="CA1818">CA1818</button>
+            <button data-flight="ZH9842">ZH9842</button>
+          </div>
+
+          <div class="real-nav-panel">
+            <div>
+              <span class="live-dot"></span>
+              <strong data-i18n="realNav">真实地图导航</strong>
+              <small data-i18n="realNavHint">使用手机当前位置，由高德地图规划路线</small>
+            </div>
+            <div class="real-nav-actions">
+              <button type="button" data-amap-destination="airport" data-i18n="navAirport">导航至禄口机场</button>
+              <button type="button" data-amap-destination="metro" data-i18n="navMetro">导航至机场地铁站</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-card">
+          <div class="map-toolbar">
+            <div>
+              <span class="live-dot"></span>
+              <span data-i18n="indoorMap">室内地图</span>
+              <strong>T2 · 3F</strong>
+            </div>
+            <div class="floor-switch">
+              <button>2F</button>
+              <button class="active">3F</button>
+            </div>
+          </div>
+
+          <div class="terminal-map" id="terminalMap">
+            <svg viewBox="0 0 720 430" role="img" aria-label="T2 航站楼地图">
+              <defs>
+                <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="5" stdDeviation="6" flood-opacity=".12"/>
+                </filter>
+              </defs>
+              <path class="terminal-shape" d="M62 84h222c34 0 57 22 70 50l28 60h197c45 0 79 36 79 80v21c0 29-23 52-52 52H423c-39 0-68-20-85-55l-21-44H62c-27 0-49-22-49-49v-66c0-27 22-49 49-49Z"/>
+              <path class="concourse" d="M385 221h194c24 0 44 20 44 44v15c0 18-15 33-33 33H421c-25 0-44-12-55-34l-18-37c-5-10 2-21 13-21h24Z"/>
+              <path class="route-path" id="routePath" d="M118 188 C210 188 242 193 292 221 S350 264 422 264 S513 264 566 264"/>
+              <g class="gate-pin destination-pin" transform="translate(567 264)">
+                <circle r="28"/>
+                <path d="M0-8v16M-8 0H8"/>
+              </g>
+              <g class="you-pin" transform="translate(118 188)" filter="url(#shadow)">
+                <circle class="pulse" r="24"/>
+                <circle r="12"/>
+                <circle r="4"/>
+              </g>
+              <g class="gate-label" transform="translate(515 209)">
+                <rect width="104" height="38" rx="19"/>
+                <text x="52" y="25" text-anchor="middle">Gate 32</text>
+              </g>
+              <g class="map-place" transform="translate(206 119)">
+                <circle r="14"/><text x="22" y="5">安检 Security</text>
+              </g>
+              <g class="map-place" transform="translate(304 304)">
+                <circle r="14"/><text x="22" y="5">餐饮 Food</text>
+              </g>
+              <g class="map-place" transform="translate(455 120)">
+                <circle r="14"/><text x="22" y="5">休息室 Lounge</text>
+              </g>
+              <text class="zone-label" x="76" y="226">出发大厅</text>
+              <text class="zone-label" x="465" y="294">登机区</text>
+            </svg>
+
+            <div class="zoom-tools">
+              <button aria-label="放大">+</button>
+              <button aria-label="缩小">−</button>
+              <button id="recenterButton" aria-label="回到当前位置">
+                <svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-13v4l3 2"/></svg>
+              </button>
+            </div>
+
+            <div class="route-card" id="routeCard">
+              <div class="route-time"><strong>8</strong><span data-i18n="minutes">分钟</span></div>
+              <div>
+                <span data-i18n="toGate">步行至 32 号登机口</span>
+                <small><b>560 m</b> · <span data-i18n="passSecurity">途经国内安检</span></small>
+              </div>
+              <button id="openRealNavigation" aria-label="打开真实地图导航" title="打开真实地图导航">↗</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="flight-strip" id="flightStrip">
+        <div class="flight-main">
+          <span class="flight-status" data-i18n="boardingSoon">即将登机</span>
+          <strong id="currentFlight">MU2881</strong>
+          <span id="flightRoute">南京 NKG → 北京大兴 PKX</span>
+        </div>
+        <div class="flight-detail">
+          <span data-i18n="departureTime">计划起飞</span><strong id="flightTime">18:25</strong>
+        </div>
+        <div class="flight-detail">
+          <span data-i18n="gate">登机口</span><strong id="flightGate">32</strong>
+        </div>
+        <div class="flight-detail">
+          <span data-i18n="boardingTime">登机时间</span><strong id="boardingTime">17:45</strong>
+        </div>
+        <button class="change-flight" id="changeFlight" data-i18n="changeFlight">更换航班</button>
+      </section>
+
+      <section class="shop-section" id="shops">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker" data-i18n="airportSelect">AROUND NKG · 机场周边</span>
+            <h2 data-i18n="shopsTitle">从地铁到好店，一搜即达。</h2>
+          </div>
+          <div class="shop-search">
+            <svg viewBox="0 0 24 24"><path d="m21 21-4.3-4.3m2.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
+            <input id="shopSearch" type="search" placeholder="搜索地铁、店铺、商品，如「盐水鸭」">
+            <kbd>⌘ K</kbd>
+          </div>
+        </div>
+
+        <div class="category-row" id="categoryRow">
+          <button class="category active" data-category="all"><span>✦</span><b data-i18n="catAll">全部</b><small>12</small></button>
+          <button class="category" data-category="dutyfree"><span>免</span><b data-i18n="catDutyfree">免税店</b><small>8</small></button>
+          <button class="category" data-category="food"><span>筷</span><b data-i18n="catFood">餐饮奶茶</b><small>28</small></button>
+          <button class="category" data-category="convenience"><span>便</span><b data-i18n="catConvenience">便利店</b><small>12</small></button>
+          <button class="category" data-category="beauty"><span>妆</span><b data-i18n="catBeauty">服饰美妆</b><small>18</small></button>
+          <button class="category" data-category="gift"><span>礼</span><b data-i18n="catGift">特产礼品</b><small>22</small></button>
+          <button class="category" data-category="book"><span>书</span><b data-i18n="catBook">书店专柜</b><small>6</small></button>
+        </div>
+
+        <div class="merchant-grid" id="merchantGrid"></div>
+        <div class="empty-state" id="emptyState">
+          <strong data-i18n="noResult">没有找到相关店铺</strong>
+          <span data-i18n="tryAgain">换个关键词试试</span>
+        </div>
+      </section>
+
+      <section class="services-section" id="services">
+        <div class="service-intro">
+          <span class="section-kicker">TRAVEL LIGHT</span>
+          <h2 data-i18n="servicesTitle">把琐事交给我们，<br>轻装启程。</h2>
+        </div>
+        <div class="service-list">
+          <button><span class="service-icon">行</span><b data-i18n="svcLuggage">行李寄存</b><small>3F 国内出发区</small><i>→</i></button>
+          <button><span class="service-icon">充</span><b data-i18n="svcCharge">充电设施</b><small>距离最近 80m</small><i>→</i></button>
+          <button><span class="service-icon">母</span><b data-i18n="svcMother">母婴室</b><small>3F 31号登机口旁</small><i>→</i></button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="brand">
+        <span class="brand-mark">NKG</span>
+        <span><b data-i18n="brand">禄口畅行</b><small>NANJING AIRPORT</small></span>
+      </div>
+      <span data-i18n="footerText">高德地图提供机场外真实路线；登机口与店铺室内路线为引导示意。</span>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <div class="modal-backdrop" id="reviewModal" aria-hidden="true">
+    <div class="review-modal">
+      <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
+      <span class="review-app">小程序点评</span>
+      <h3 id="modalShopName">金陵名小吃</h3>
+      <div class="review-score"><strong>4.8</strong><span>★★★★★</span><small>328 条真实评价</small></div>
+      <blockquote>“出发前吃一碗鸭血粉丝汤很满足，出餐快，距离登机口也近。”</blockquote>
+      <button class="primary-wide" id="openMiniProgram">打开小程序查看全部点评</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
