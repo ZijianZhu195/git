@@ -236,6 +236,7 @@ footer { padding: 35px 5vw; display: flex; justify-content: space-between; align
   .flight-strip { margin: 0 18px; grid-template-columns: 1fr 1fr; gap: 16px; padding: 18px; }.flight-main { grid-column: 1/-1; }.flight-detail { padding-left: 0; border-left: 0; border-top: 1px solid rgba(255,255,255,.12); padding-top: 12px; }.flight-detail:nth-of-type(3) { display: none; }
   .shop-section { padding: 55px 18px 70px; }.section-heading { align-items: stretch; flex-direction: column; }.shop-search { width: 100%; }
   .merchant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .merchant-card { min-width: 0; width: 100%; }
   .merchant-visual { height: 104px; }
   .merchant-visual::after { width: 72px; height: 72px; box-shadow: 0 0 0 13px rgba(255,255,255,.1), 0 0 0 26px rgba(255,255,255,.08); }
   .merchant-visual .product-symbol { font-size: 30px; }
@@ -251,4 +252,12 @@ footer { padding: 35px 5vw; display: flex; justify-content: space-between; align
   .services-section { padding: 65px 18px; gap: 30px; }.service-list { grid-template-columns: 1fr; }.service-list button { grid-template-columns: auto 1fr auto; align-items: center; }.service-icon { grid-column: 1; grid-row: 1/3; margin: 0 8px 0 0; }.service-list small { grid-column: 2; }.service-list i { grid-column: 3; grid-row: 1/3; }
   footer { padding: 25px 18px; }.footer > span, footer > span { display: none; }
   .review-modal { padding: 25px 18px; max-height: 94vh; }.review-score { flex-wrap: wrap; }.review-score small { margin-left: 0; }
+}
+
+@media (max-width: 480px) {
+  .shop-section { padding-left: 12px; padding-right: 12px; }
+  #merchantGrid.merchant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px; }
+  #merchantGrid .merchant-visual { height: 92px; }
+  #merchantGrid .merchant-body { padding: 8px; }
+  #merchantGrid .merchant-actions button { font-size: 6.5px; }
 }

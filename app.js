@@ -42,6 +42,30 @@ const indoorDestinations = {
   "苏味集": { node: "F", floor: "3F" }
 };
 
+const floorVisuals = {
+  "3F": {
+    terminal: "M62 84h222c34 0 57 22 70 50l28 60h197c45 0 79 36 79 80v21c0 29-23 52-52 52H423c-39 0-68-20-85-55l-21-44H62c-27 0-49-22-49-49v-66c0-27 22-49 49-49Z",
+    concourse: "M385 221h194c24 0 44 20 44 44v15c0 18-15 33-33 33H421c-25 0-44-12-55-34l-18-37c-5-10 2-21 13-21h24Z",
+    network: ["M118 188H205L292 221L350 264H566", "M205 188V120H455", "M292 221V304H455", "M455 120V264", "M350 264V350H520"],
+    places: [["206 119", "安检 Security"], ["304 304", "餐饮 Food"], ["455 120", "休息室 Lounge"]],
+    zones: ["出发大厅", "登机区"]
+  },
+  "2F": {
+    terminal: "M95 80h470c38 0 68 30 68 68v142c0 38-30 68-68 68H154c-43 0-77-35-77-77V98c0-10 8-18 18-18Z",
+    concourse: "M145 142h390c18 0 32 14 32 32v70c0 18-14 32-32 32H180c-29 0-53-24-53-53v-63c0-10 8-18 18-18Z",
+    network: ["M130 210H590", "M190 140V300", "M320 140V300", "M470 140V300", "M130 300H590"],
+    places: [["185 112", "行李提取 Baggage"], ["305 310", "到达出口 Exit"], ["480 112", "便利店 Store"]],
+    zones: ["到达大厅", "行李提取区"]
+  },
+  "B1": {
+    terminal: "M78 68h560c20 0 36 16 36 36v232c0 20-16 36-36 36H78c-20 0-36-16-36-36V104c0-20 16-36 36-36Z",
+    concourse: "M125 126h470v178H125z",
+    network: ["M100 180H620", "M100 260H620", "M180 100V340", "M350 100V340", "M530 100V340"],
+    places: [["185 105", "地铁 S1 Metro"], ["315 332", "网约车 Ride-hailing"], ["500 105", "停车场 Parking"]],
+    zones: ["交通中心", "地铁换乘区"]
+  }
+};
+
 const shopReviews = {
   default: [
     { user: "航旅用户 2281", stars: 5, text: "位置很好找，服务速度快，赶飞机时也不用排很久。" },
@@ -140,6 +164,16 @@ function shortestIndoorPath(start, end) {
 function switchFloor(floor) {
   $$(".floor-switch button").forEach((button) => button.classList.toggle("active", button.dataset.floor === floor));
   $("#currentFloorLabel").textContent = `T2 · ${floor}`;
+  const visual = floorVisuals[floor];
+  $("#terminalShape").setAttribute("d", visual.terminal);
+  $("#concourseShape").setAttribute("d", visual.concourse);
+  $("#mapNetwork").innerHTML = visual.network.map((path) => `<path d="${path}"></path>`).join("");
+  visual.places.forEach((place, index) => {
+    $(`#mapPlace${index + 1}`).setAttribute("transform", `translate(${place[0]})`);
+    $(`#mapPlaceText${index + 1}`).textContent = place[1];
+  });
+  $("#zoneLabel1").textContent = visual.zones[0];
+  $("#zoneLabel2").textContent = visual.zones[1];
 }
 
 function planIndoorRoute(destinationName, detail) {
@@ -241,7 +275,7 @@ function bindMerchantActions() {
     const isMetro = button.dataset.navShop === "禄口机场地铁站";
     activeRealDestination = isMetro ? "metro" : "airport";
     showToast(language === "zh" ? `已规划前往「${button.dataset.navShop}」的路线` : `Route to ${button.dataset.navShop} ready`);
-    $("#navigation").scrollIntoView({ behavior: "smooth" });
+    $(".map-card").scrollIntoView({ behavior: "smooth", block: "center" });
     planIndoorRoute(button.dataset.navShop, isMetro ? "乘电梯前往 B1 · S1 号线" : "虚拟室内路网已规划");
   }));
   $$("[data-review-shop]").forEach((button) => button.addEventListener("click", () => {
@@ -278,6 +312,10 @@ function showToast(message) {
   window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
 }
 
+function focusIndoorMap() {
+  $(".map-card").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
 function setFlight(code) {
   const normalized = code.trim().toUpperCase();
   const flight = flights[normalized];
@@ -302,8 +340,12 @@ function setFlight(code) {
 $("#flightForm").addEventListener("submit", (event) => {
   event.preventDefault();
   setFlight($("#flightInput").value);
+  focusIndoorMap();
 });
-$$("[data-flight]").forEach((button) => button.addEventListener("click", () => setFlight(button.dataset.flight)));
+$$("[data-flight]").forEach((button) => button.addEventListener("click", () => {
+  setFlight(button.dataset.flight);
+  focusIndoorMap();
+}));
 $("#changeFlight").addEventListener("click", () => { $("#flightInput").focus(); $("#navigation").scrollIntoView({ behavior: "smooth" }); });
 
 $("#categoryRow").addEventListener("click", (event) => {

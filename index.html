@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260604-2">
 </head>
 <body>
   <div class="page-shell">
@@ -107,9 +107,9 @@
                   <feDropShadow dx="0" dy="5" stdDeviation="6" flood-opacity=".12"/>
                 </filter>
               </defs>
-              <path class="terminal-shape" d="M62 84h222c34 0 57 22 70 50l28 60h197c45 0 79 36 79 80v21c0 29-23 52-52 52H423c-39 0-68-20-85-55l-21-44H62c-27 0-49-22-49-49v-66c0-27 22-49 49-49Z"/>
-              <path class="concourse" d="M385 221h194c24 0 44 20 44 44v15c0 18-15 33-33 33H421c-25 0-44-12-55-34l-18-37c-5-10 2-21 13-21h24Z"/>
-              <g class="map-network">
+              <path class="terminal-shape" id="terminalShape" d="M62 84h222c34 0 57 22 70 50l28 60h197c45 0 79 36 79 80v21c0 29-23 52-52 52H423c-39 0-68-20-85-55l-21-44H62c-27 0-49-22-49-49v-66c0-27 22-49 49-49Z"/>
+              <path class="concourse" id="concourseShape" d="M385 221h194c24 0 44 20 44 44v15c0 18-15 33-33 33H421c-25 0-44-12-55-34l-18-37c-5-10 2-21 13-21h24Z"/>
+              <g class="map-network" id="mapNetwork">
                 <path d="M118 188H205L292 221L350 264H566"/>
                 <path d="M205 188V120H455"/>
                 <path d="M292 221V304H455"/>
@@ -130,17 +130,17 @@
                 <rect width="104" height="38" rx="19"/>
                 <text x="52" y="25" text-anchor="middle">Gate 32</text>
               </g>
-              <g class="map-place" transform="translate(206 119)">
-                <circle r="14"/><text x="22" y="5">安检 Security</text>
+              <g class="map-place" id="mapPlace1" transform="translate(206 119)">
+                <circle r="14"/><text x="22" y="5" id="mapPlaceText1">安检 Security</text>
               </g>
-              <g class="map-place" transform="translate(304 304)">
-                <circle r="14"/><text x="22" y="5">餐饮 Food</text>
+              <g class="map-place" id="mapPlace2" transform="translate(304 304)">
+                <circle r="14"/><text x="22" y="5" id="mapPlaceText2">餐饮 Food</text>
               </g>
-              <g class="map-place" transform="translate(455 120)">
-                <circle r="14"/><text x="22" y="5">休息室 Lounge</text>
+              <g class="map-place" id="mapPlace3" transform="translate(455 120)">
+                <circle r="14"/><text x="22" y="5" id="mapPlaceText3">休息室 Lounge</text>
               </g>
-              <text class="zone-label" x="76" y="226">出发大厅</text>
-              <text class="zone-label" x="465" y="294">登机区</text>
+              <text class="zone-label" id="zoneLabel1" x="76" y="226">出发大厅</text>
+              <text class="zone-label" id="zoneLabel2" x="465" y="294">登机区</text>
             </svg>
 
             <div class="zoom-tools">
@@ -258,6 +258,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20260604-2"></script>
 </body>
 </html>
