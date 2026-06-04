@@ -83,13 +83,18 @@ const shopReviews = {
 };
 
 const merchantImages = {
-  transit: "https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&w=700&q=75",
-  dutyfree: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=700&q=75",
-  food: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=700&q=75",
-  convenience: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=700&q=75",
-  beauty: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=700&q=75",
-  gift: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=700&q=75",
-  book: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=700&q=75"
+  "禄口机场地铁站": "https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&w=700&q=75",
+  "中免免税": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=700&q=75",
+  "金陵名小吃": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=700&q=75",
+  "M Stand": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=700&q=75",
+  "罗森便利店": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=700&q=75",
+  "云锦·南京": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&w=700&q=75",
+  "SEPHORA 丝芙兰": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=700&q=75",
+  "金陵好礼": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=700&q=75",
+  "南京大牌档": "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=700&q=75",
+  "茶颜悦色": "https://images.unsplash.com/photo-1558857563-b371033873b8?auto=format&fit=crop&w=700&q=75",
+  "先锋书店": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=700&q=75",
+  "苏味集": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=700&q=75"
 };
 
 const merchants = [
@@ -265,7 +270,7 @@ function renderMerchants() {
   $("#merchantGrid").innerHTML = list.map((m) => `
     <article class="merchant-card">
       <div class="merchant-visual ${m.category}">
-        <img src="${merchantImages[m.category]}" alt="${language === "zh" ? m.name : m.nameEn}" loading="lazy" referrerpolicy="no-referrer">
+        <img src="${merchantImages[m.name]}" alt="${language === "zh" ? m.name : m.nameEn}" loading="lazy" referrerpolicy="no-referrer">
         <span class="discount-tag">${language === "zh" ? m.discount : m.discountEn}</span>
         <span class="product-symbol">${m.symbol}</span>
       </div>
