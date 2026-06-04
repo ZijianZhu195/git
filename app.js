@@ -82,6 +82,16 @@ const shopReviews = {
   ]
 };
 
+const merchantImages = {
+  transit: "https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&w=700&q=75",
+  dutyfree: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=700&q=75",
+  food: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=700&q=75",
+  convenience: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=700&q=75",
+  beauty: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=700&q=75",
+  gift: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=700&q=75",
+  book: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=700&q=75"
+};
+
 const merchants = [
   { name: "禄口机场地铁站", nameEn: "Lukou Airport Metro Station", category: "transit", symbol: "M", location: "T2 · B1 · 交通中心", locationEn: "T2 · B1 · Transport Center", product: "地铁 S1 号线 · 往南京南站", productEn: "Metro Line S1 · To Nanjing South", rating: "首班 06:00", reviews: 0, discount: "约 6 分钟到达", discountEn: "6 min walk", isMetro: true },
   { name: "中免免税", nameEn: "CDF Duty Free", category: "dutyfree", symbol: "免", location: "T2 · 3F · 国际出发", locationEn: "T2 · 3F · International Departures", product: "国际香化 · 酒水精品", productEn: "Beauty · Wine & Spirits", rating: "4.8", reviews: 428, discount: "精选商品 8 折", discountEn: "20% OFF selected" },
@@ -255,6 +265,7 @@ function renderMerchants() {
   $("#merchantGrid").innerHTML = list.map((m) => `
     <article class="merchant-card">
       <div class="merchant-visual ${m.category}">
+        <img src="${merchantImages[m.category]}" alt="${language === "zh" ? m.name : m.nameEn}" loading="lazy" referrerpolicy="no-referrer">
         <span class="discount-tag">${language === "zh" ? m.discount : m.discountEn}</span>
         <span class="product-symbol">${m.symbol}</span>
       </div>
