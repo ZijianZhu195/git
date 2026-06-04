@@ -10,18 +10,18 @@ const realDestinations = {
 };
 
 const indoorGraph = {
-  A: { x: 118, y: 188, links: ["B"] },
-  B: { x: 205, y: 188, links: ["A", "C", "G"] },
-  C: { x: 292, y: 221, links: ["B", "D", "I"] },
-  D: { x: 350, y: 264, links: ["C", "E", "K"] },
-  E: { x: 455, y: 264, links: ["D", "F", "H", "J"] },
-  F: { x: 566, y: 264, links: ["E"] },
-  G: { x: 205, y: 120, links: ["B", "H"] },
-  H: { x: 455, y: 120, links: ["G", "E"] },
-  I: { x: 292, y: 304, links: ["C", "J"] },
-  J: { x: 455, y: 304, links: ["I", "E"] },
-  K: { x: 350, y: 350, links: ["D", "L"] },
-  L: { x: 520, y: 350, links: ["K"] }
+  A: { x: 360, y: 326, links: ["B"] },
+  B: { x: 360, y: 274, links: ["A", "C", "I"] },
+  C: { x: 360, y: 218, links: ["B", "D", "G", "J"] },
+  D: { x: 470, y: 168, links: ["C", "E", "H"] },
+  E: { x: 570, y: 142, links: ["D", "F"] },
+  F: { x: 655, y: 142, links: ["E"] },
+  G: { x: 250, y: 168, links: ["C", "H"] },
+  H: { x: 145, y: 142, links: ["G", "D"] },
+  I: { x: 250, y: 278, links: ["B", "J"] },
+  J: { x: 470, y: 278, links: ["I", "C"] },
+  K: { x: 360, y: 360, links: ["A", "L"] },
+  L: { x: 520, y: 360, links: ["K"] }
 };
 
 const indoorDestinations = {
@@ -44,25 +44,25 @@ const indoorDestinations = {
 
 const floorVisuals = {
   "3F": {
-    terminal: "M62 84h222c34 0 57 22 70 50l28 60h197c45 0 79 36 79 80v21c0 29-23 52-52 52H423c-39 0-68-20-85-55l-21-44H62c-27 0-49-22-49-49v-66c0-27 22-49 49-49Z",
-    concourse: "M385 221h194c24 0 44 20 44 44v15c0 18-15 33-33 33H421c-25 0-44-12-55-34l-18-37c-5-10 2-21 13-21h24Z",
-    network: ["M118 188H205L292 221L350 264H566", "M205 188V120H455", "M292 221V304H455", "M455 120V264", "M350 264V350H520"],
-    places: [["206 119", "安检 Security"], ["304 304", "餐饮 Food"], ["455 120", "休息室 Lounge"]],
-    zones: ["出发大厅", "登机区"]
+    terminal: "M48 112H245L288 176Q360 205 432 176L475 112H672V174H492L452 222Q360 258 268 222L228 174H48Z",
+    concourse: "M260 205Q360 250 460 205L492 310Q360 374 228 310Z",
+    network: ["M55 142H245L360 218L475 142H665", "M360 218V326", "M250 168H470", "M250 278H470", "M145 142H570"],
+    places: [["360 206", "安检 Security"], ["360 305", "值机 Check-in"], ["520 130", "登机口 Gates"]],
+    zones: ["1-8 / 81-84", "15-31 / 41-46"]
   },
   "2F": {
-    terminal: "M95 80h470c38 0 68 30 68 68v142c0 38-30 68-68 68H154c-43 0-77-35-77-77V98c0-10 8-18 18-18Z",
-    concourse: "M145 142h390c18 0 32 14 32 32v70c0 18-14 32-32 32H180c-29 0-53-24-53-53v-63c0-10 8-18 18-18Z",
-    network: ["M130 210H590", "M190 140V300", "M320 140V300", "M470 140V300", "M130 300H590"],
-    places: [["185 112", "行李提取 Baggage"], ["305 310", "到达出口 Exit"], ["480 112", "便利店 Store"]],
-    zones: ["到达大厅", "行李提取区"]
+    terminal: "M72 104H648V158H470L430 204H290L250 158H72Z",
+    concourse: "M160 235H560V282L495 330H225L160 282Z",
+    network: ["M82 132H638", "M250 132L320 258", "M470 132L400 258", "M225 278H495", "M360 132V326"],
+    places: [["180 124", "到达廊桥 Arrivals"], ["360 270", "行李提取 Baggage"], ["510 270", "到达出口 Exit"]],
+    zones: ["2F 到达长廊", "1F 到达大厅"]
   },
   "B1": {
-    terminal: "M78 68h560c20 0 36 16 36 36v232c0 20-16 36-36 36H78c-20 0-36-16-36-36V104c0-20 16-36 36-36Z",
-    concourse: "M125 126h470v178H125z",
-    network: ["M100 180H620", "M100 260H620", "M180 100V340", "M350 100V340", "M530 100V340"],
-    places: [["185 105", "地铁 S1 Metro"], ["315 332", "网约车 Ride-hailing"], ["500 105", "停车场 Parking"]],
-    zones: ["交通中心", "地铁换乘区"]
+    terminal: "M62 116L238 80L315 112H405L482 80L658 116L610 184H110Z",
+    concourse: "M220 210H500V326H220Z",
+    network: ["M85 148H635", "M180 148V270H540V148", "M360 112V350", "M250 268H470", "M360 326H520"],
+    places: [["360 315", "地铁 S1 Metro"], ["250 250", "交通中心 Transport"], ["535 132", "停车场 P1/P2"]],
+    zones: ["T2 / 交通中心 / T1", "B1 地铁换乘"]
   }
 };
 
@@ -98,7 +98,7 @@ const copy = {
   zh: {
     brand: "禄口畅行", navGuide: "机场导航", navShops: "机场周边", navServices: "出行服务", eyebrow: "南京禄口国际机场 · T2",
     heroLine1: "从这里，", heroLine2: "从容抵达每一程。", heroDesc: "输入航班号，即刻查看航班动态与登机口路线。机场再大，也不绕路。",
-    flightLabel: "输入航班号", startNav: "开始导航", recent: "最近查询", indoorMap: "虚拟室内导航", minutes: "分钟", toGate: "步行至 32 号登机口",
+    flightLabel: "输入航班号", startNav: "开始导航", recent: "最近查询", indoorMap: "T2 室内导航演示", minutes: "分钟", toGate: "步行至 32 号登机口",
     passSecurity: "途经国内安检", boardingSoon: "即将登机", departureTime: "计划起飞", gate: "登机口", boardingTime: "登机时间", changeFlight: "更换航班",
     airportSelect: "AROUND NKG · 机场周边", shopsTitle: "从地铁到好店，一搜即达。", catAll: "全部", catDutyfree: "免税店", catFood: "餐饮奶茶", catConvenience: "便利店", catBeauty: "服饰美妆", catGift: "特产礼品", catBook: "书店专柜",
     noResult: "没有找到相关店铺", tryAgain: "换个关键词试试", servicesTitle: "把琐事交给我们，轻装启程。", svcLuggage: "行李寄存", svcCharge: "充电设施", svcMother: "母婴室",

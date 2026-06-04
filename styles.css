@@ -110,6 +110,7 @@ h1 em { color: var(--teal); font-style: normal; }
 .floor-switch { display: flex; padding: 3px; gap: 2px; background: #e9ece7; border-radius: 6px; }
 .floor-switch button { border: 0; padding: 5px 9px; background: transparent; border-radius: 4px; color: var(--muted); font-size: 10px; }
 .floor-switch button.active { background: white; color: var(--ink); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+.official-map-link { display: flex; align-items: center; color: var(--teal); text-decoration: none; padding: 0 7px; font-size: 8px; font-weight: 700; white-space: nowrap; }
 .terminal-map { height: 510px; position: relative; display: grid; place-items: center; overflow: hidden; background-image: radial-gradient(rgba(13,83,102,.12) .7px, transparent .7px); background-size: 18px 18px; }
 .terminal-map > svg { width: 95%; overflow: visible; }
 .terminal-shape { fill: #fafaf6; stroke: #d3ddd8; stroke-width: 2; }
@@ -127,7 +128,7 @@ h1 em { color: var(--teal); font-style: normal; }
 .gate-label text { fill: white; stroke: none; font-size: 12px; font-weight: 700; }
 .map-place circle { fill: white; stroke: #bdd0c8; stroke-width: 2; }
 .map-place text { fill: #758b83; stroke: none; font-size: 11px; }
-.zone-label { fill: #a3b1ac; stroke: none; font-size: 14px; letter-spacing: .2em; }
+.zone-label { fill: #8d9f99; stroke: none; font-size: 11px; font-weight: 700; letter-spacing: .08em; }
 .zoom-tools { position: absolute; right: 16px; top: 18px; display: flex; flex-direction: column; gap: 5px; }
 .zoom-tools button { width: 32px; height: 32px; background: white; border: 1px solid var(--line); color: var(--teal); font-size: 17px; box-shadow: 0 3px 12px rgba(0,0,0,.05); }
 .zoom-tools svg { width: 14px; }
