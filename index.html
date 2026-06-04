@@ -82,16 +82,25 @@
           <div class="map-toolbar">
             <div>
               <span class="live-dot"></span>
-              <span data-i18n="indoorMap">室内地图</span>
-              <strong>T2 · 3F</strong>
+              <span data-i18n="indoorMap">虚拟室内导航</span>
+              <strong id="currentFloorLabel">T2 · 3F</strong>
             </div>
             <div class="floor-switch">
-              <button>2F</button>
-              <button class="active">3F</button>
+              <button data-floor="B1">B1</button>
+              <button data-floor="2F">2F</button>
+              <button class="active" data-floor="3F">3F</button>
             </div>
           </div>
 
           <div class="terminal-map" id="terminalMap">
+            <div class="position-status">
+              <span class="signal-bars"><i></i><i></i><i></i></span>
+              <div><strong id="positionMode">BLE + Wi-Fi 模拟定位</strong><small id="positionAccuracy">定位精度约 ±3.2m</small></div>
+            </div>
+            <div class="turn-instruction" id="turnInstruction">
+              <span id="turnIcon">↑</span>
+              <div><strong id="instructionTitle">沿出发大厅直行</strong><small id="instructionDetail">前方 120 米经过国内安检</small></div>
+            </div>
             <svg viewBox="0 0 720 430" role="img" aria-label="T2 航站楼地图">
               <defs>
                 <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
@@ -100,17 +109,24 @@
               </defs>
               <path class="terminal-shape" d="M62 84h222c34 0 57 22 70 50l28 60h197c45 0 79 36 79 80v21c0 29-23 52-52 52H423c-39 0-68-20-85-55l-21-44H62c-27 0-49-22-49-49v-66c0-27 22-49 49-49Z"/>
               <path class="concourse" d="M385 221h194c24 0 44 20 44 44v15c0 18-15 33-33 33H421c-25 0-44-12-55-34l-18-37c-5-10 2-21 13-21h24Z"/>
-              <path class="route-path" id="routePath" d="M118 188 C210 188 242 193 292 221 S350 264 422 264 S513 264 566 264"/>
-              <g class="gate-pin destination-pin" transform="translate(567 264)">
+              <g class="map-network">
+                <path d="M118 188H205L292 221L350 264H566"/>
+                <path d="M205 188V120H455"/>
+                <path d="M292 221V304H455"/>
+                <path d="M455 120V264"/>
+                <path d="M350 264V350H520"/>
+              </g>
+              <path class="route-path" id="routePath" d="M118 188 L205 188 L292 221 L350 264 L566 264"/>
+              <g class="gate-pin destination-pin" id="destinationPin" transform="translate(566 264)">
                 <circle r="28"/>
                 <path d="M0-8v16M-8 0H8"/>
               </g>
-              <g class="you-pin" transform="translate(118 188)" filter="url(#shadow)">
+              <g class="you-pin" id="youPin" transform="translate(118 188)" filter="url(#shadow)">
                 <circle class="pulse" r="24"/>
                 <circle r="12"/>
                 <circle r="4"/>
               </g>
-              <g class="gate-label" transform="translate(515 209)">
+              <g class="gate-label" id="destinationLabel" transform="translate(515 209)">
                 <rect width="104" height="38" rx="19"/>
                 <text x="52" y="25" text-anchor="middle">Gate 32</text>
               </g>
@@ -141,7 +157,7 @@
                 <span data-i18n="toGate">步行至 32 号登机口</span>
                 <small><b>560 m</b> · <span data-i18n="passSecurity">途经国内安检</span></small>
               </div>
-              <button id="openRealNavigation" aria-label="打开真实地图导航" title="打开真实地图导航">↗</button>
+              <button id="startIndoorNavigation" class="start-indoor-button" aria-label="开始模拟室内导航" title="开始模拟室内导航">▶</button>
             </div>
           </div>
         </div>

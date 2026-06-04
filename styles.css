@@ -114,6 +114,7 @@ h1 em { color: var(--teal); font-style: normal; }
 .terminal-map > svg { width: 95%; overflow: visible; }
 .terminal-shape { fill: #fafaf6; stroke: #d3ddd8; stroke-width: 2; }
 .concourse { fill: #e4eee9; stroke: #c5d7cf; stroke-width: 1.5; }
+.map-network path { fill: none; stroke: #d6dfda; stroke-width: 3; stroke-dasharray: 2 8; }
 .route-path { fill: none; stroke: var(--orange); stroke-width: 5; stroke-dasharray: 7 11; animation: dash 12s linear infinite; }
 @keyframes dash { to { stroke-dashoffset: -200; } }
 .destination-pin circle { fill: var(--orange); stroke: white; stroke-width: 4; }
@@ -130,6 +131,12 @@ h1 em { color: var(--teal); font-style: normal; }
 .zoom-tools { position: absolute; right: 16px; top: 18px; display: flex; flex-direction: column; gap: 5px; }
 .zoom-tools button { width: 32px; height: 32px; background: white; border: 1px solid var(--line); color: var(--teal); font-size: 17px; box-shadow: 0 3px 12px rgba(0,0,0,.05); }
 .zoom-tools svg { width: 14px; }
+.position-status { position: absolute; left: 16px; top: 16px; z-index: 3; display: flex; align-items: center; gap: 9px; background: rgba(255,255,255,.92); border: 1px solid var(--line); padding: 9px 11px; box-shadow: 0 6px 20px rgba(18,48,59,.08); }
+.position-status > div { display: flex; flex-direction: column; gap: 2px; }.position-status strong { font-size: 9px; }.position-status small { color: var(--muted); font-size: 7px; }
+.signal-bars { height: 18px; display: flex; gap: 2px; align-items: end; }.signal-bars i { width: 3px; background: #3ea979; animation: signal 1.5s ease-in-out infinite; }.signal-bars i:nth-child(1) { height: 6px; }.signal-bars i:nth-child(2) { height: 11px; animation-delay: .2s; }.signal-bars i:nth-child(3) { height: 17px; animation-delay: .4s; }
+@keyframes signal { 50% { opacity: .35; } }
+.turn-instruction { position: absolute; z-index: 4; left: 50%; top: 16px; transform: translateX(-50%); min-width: 245px; display: flex; align-items: center; gap: 11px; padding: 10px 14px; background: var(--teal-dark); color: white; box-shadow: 0 8px 25px rgba(8,61,77,.2); opacity: 0; pointer-events: none; transition: .25s; }
+.turn-instruction.show { opacity: 1; }.turn-instruction > span { font-size: 25px; }.turn-instruction div { display: flex; flex-direction: column; gap: 2px; }.turn-instruction strong { font-size: 10px; }.turn-instruction small { font-size: 8px; color: rgba(255,255,255,.65); }
 .route-card {
   position: absolute; left: 18px; right: 18px; bottom: 18px; background: rgba(255,255,255,.94); backdrop-filter: blur(14px);
   border: 1px solid rgba(13,83,102,.14); box-shadow: 0 14px 30px rgba(18,48,59,.13); border-radius: 8px; padding: 14px;
@@ -140,6 +147,8 @@ h1 em { color: var(--teal); font-style: normal; }
 .route-card > div:nth-child(2) { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; }
 .route-card small { color: var(--muted); font-size: 10px; font-weight: 500; }.route-card small b { color: var(--orange); }
 .route-card > button { width: 31px; height: 31px; border-radius: 50%; border: 1px solid var(--line); background: white; color: var(--teal); }
+.route-card > button.start-indoor-button { background: var(--orange); color: white; border-color: var(--orange); }
+.terminal-map.navigating .route-path { stroke-width: 7; animation-duration: 4s; }.terminal-map.navigating .you-pin { transition: transform .8s linear; }
 
 .flight-strip {
   margin: 0 5vw; transform: translateY(-34px); background: var(--teal-dark); color: white; min-height: 94px; display: grid;
@@ -221,7 +230,7 @@ blockquote { margin: 20px 0; color: var(--muted); font-size: 12px; line-height: 
   .topbar { height: 68px; padding: 0 18px; }.desktop-nav, .icon-button { display: none; }.brand-mark { width: 37px; height: 37px; }
   .hero-section { padding: 38px 18px 65px; gap: 38px; }.hero-copy > p { font-size: 13px; }.flight-search { grid-template-columns: 22px 1fr; }.flight-search button { grid-column: 1/-1; margin-top: 8px; }
   .real-nav-panel { align-items: stretch; flex-direction: column; }.real-nav-actions button { flex: 1; padding: 11px 8px; }
-  .terminal-map { height: 365px; }.terminal-map > svg { width: 125%; }.route-card { left: 10px; right: 10px; bottom: 10px; }.zoom-tools { right: 9px; top: 10px; }
+  .terminal-map { height: 405px; }.terminal-map > svg { width: 125%; }.route-card { left: 10px; right: 10px; bottom: 10px; }.zoom-tools { right: 9px; top: 72px; }.position-status { left: 9px; top: 9px; }.turn-instruction { left: 9px; right: 9px; top: 58px; transform: none; min-width: 0; }
   .flight-strip { margin: 0 18px; grid-template-columns: 1fr 1fr; gap: 16px; padding: 18px; }.flight-main { grid-column: 1/-1; }.flight-detail { padding-left: 0; border-left: 0; border-top: 1px solid rgba(255,255,255,.12); padding-top: 12px; }.flight-detail:nth-of-type(3) { display: none; }
   .shop-section { padding: 55px 18px 70px; }.section-heading { align-items: stretch; flex-direction: column; }.shop-search { width: 100%; }
   .merchant-grid { grid-template-columns: 1fr; }.merchant-visual { height: 210px; }.category { min-width: 105px; }

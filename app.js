@@ -9,6 +9,39 @@ const realDestinations = {
   metro: { name: "禄口机场地铁站", position: "118.864308,31.735984", mode: "walk" }
 };
 
+const indoorGraph = {
+  A: { x: 118, y: 188, links: ["B"] },
+  B: { x: 205, y: 188, links: ["A", "C", "G"] },
+  C: { x: 292, y: 221, links: ["B", "D", "I"] },
+  D: { x: 350, y: 264, links: ["C", "E", "K"] },
+  E: { x: 455, y: 264, links: ["D", "F", "H", "J"] },
+  F: { x: 566, y: 264, links: ["E"] },
+  G: { x: 205, y: 120, links: ["B", "H"] },
+  H: { x: 455, y: 120, links: ["G", "E"] },
+  I: { x: 292, y: 304, links: ["C", "J"] },
+  J: { x: 455, y: 304, links: ["I", "E"] },
+  K: { x: 350, y: 350, links: ["D", "L"] },
+  L: { x: 520, y: 350, links: ["K"] }
+};
+
+const indoorDestinations = {
+  "Gate 32": { node: "F", floor: "3F" },
+  "Gate 18": { node: "H", floor: "3F" },
+  "Gate 25": { node: "E", floor: "3F" },
+  "禄口机场地铁站": { node: "L", floor: "B1" },
+  "中免免税": { node: "H", floor: "3F" },
+  "金陵名小吃": { node: "F", floor: "3F" },
+  "M Stand": { node: "J", floor: "3F" },
+  "罗森便利店": { node: "I", floor: "2F" },
+  "云锦·南京": { node: "G", floor: "3F" },
+  "SEPHORA 丝芙兰": { node: "H", floor: "3F" },
+  "金陵好礼": { node: "E", floor: "3F" },
+  "南京大牌档": { node: "I", floor: "3F" },
+  "茶颜悦色": { node: "G", floor: "3F" },
+  "先锋书店": { node: "E", floor: "3F" },
+  "苏味集": { node: "F", floor: "3F" }
+};
+
 const merchants = [
   { name: "禄口机场地铁站", nameEn: "Lukou Airport Metro Station", category: "transit", symbol: "M", location: "T2 · B1 · 交通中心", locationEn: "T2 · B1 · Transport Center", product: "地铁 S1 号线 · 往南京南站", productEn: "Metro Line S1 · To Nanjing South", rating: "首班 06:00", reviews: 0, discount: "约 6 分钟到达", discountEn: "6 min walk", isMetro: true },
   { name: "中免免税", nameEn: "CDF Duty Free", category: "dutyfree", symbol: "免", location: "T2 · 3F · 国际出发", locationEn: "T2 · 3F · International Departures", product: "国际香化 · 酒水精品", productEn: "Beauty · Wine & Spirits", rating: "4.8", reviews: 428, discount: "精选商品 8 折", discountEn: "20% OFF selected" },
@@ -28,7 +61,7 @@ const copy = {
   zh: {
     brand: "禄口畅行", navGuide: "机场导航", navShops: "机场周边", navServices: "出行服务", eyebrow: "南京禄口国际机场 · T2",
     heroLine1: "从这里，", heroLine2: "从容抵达每一程。", heroDesc: "输入航班号，即刻查看航班动态与登机口路线。机场再大，也不绕路。",
-    flightLabel: "输入航班号", startNav: "开始导航", recent: "最近查询", indoorMap: "室内地图", minutes: "分钟", toGate: "步行至 32 号登机口",
+    flightLabel: "输入航班号", startNav: "开始导航", recent: "最近查询", indoorMap: "虚拟室内导航", minutes: "分钟", toGate: "步行至 32 号登机口",
     passSecurity: "途经国内安检", boardingSoon: "即将登机", departureTime: "计划起飞", gate: "登机口", boardingTime: "登机时间", changeFlight: "更换航班",
     airportSelect: "AROUND NKG · 机场周边", shopsTitle: "从地铁到好店，一搜即达。", catAll: "全部", catDutyfree: "免税店", catFood: "餐饮奶茶", catConvenience: "便利店", catBeauty: "服饰美妆", catGift: "特产礼品", catBook: "书店专柜",
     noResult: "没有找到相关店铺", tryAgain: "换个关键词试试", servicesTitle: "把琐事交给我们，轻装启程。", svcLuggage: "行李寄存", svcCharge: "充电设施", svcMother: "母婴室",
@@ -51,9 +84,112 @@ let language = "zh";
 let activeCategory = "all";
 let activeFlight = "MU2881";
 let activeRealDestination = "airport";
+let currentIndoorNode = "A";
+let activeIndoorRoute = [];
+let indoorNavigationTimer = null;
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+function nodeDistance(from, to) {
+  return Math.hypot(indoorGraph[from].x - indoorGraph[to].x, indoorGraph[from].y - indoorGraph[to].y);
+}
+
+function shortestIndoorPath(start, end) {
+  const distances = Object.fromEntries(Object.keys(indoorGraph).map((node) => [node, Infinity]));
+  const previous = {};
+  const unvisited = new Set(Object.keys(indoorGraph));
+  distances[start] = 0;
+  while (unvisited.size) {
+    const current = [...unvisited].reduce((best, node) => distances[node] < distances[best] ? node : best);
+    unvisited.delete(current);
+    if (current === end || distances[current] === Infinity) break;
+    indoorGraph[current].links.forEach((neighbor) => {
+      const nextDistance = distances[current] + nodeDistance(current, neighbor);
+      if (nextDistance < distances[neighbor]) {
+        distances[neighbor] = nextDistance;
+        previous[neighbor] = current;
+      }
+    });
+  }
+  const route = [];
+  let cursor = end;
+  while (cursor) {
+    route.unshift(cursor);
+    if (cursor === start) break;
+    cursor = previous[cursor];
+  }
+  return route[0] === start ? route : [start];
+}
+
+function switchFloor(floor) {
+  $$(".floor-switch button").forEach((button) => button.classList.toggle("active", button.dataset.floor === floor));
+  $("#currentFloorLabel").textContent = `T2 · ${floor}`;
+}
+
+function planIndoorRoute(destinationName, detail) {
+  stopIndoorNavigation();
+  const destination = indoorDestinations[destinationName] || { node: "E", floor: "3F" };
+  activeIndoorRoute = shortestIndoorPath(currentIndoorNode, destination.node);
+  const points = activeIndoorRoute.map((node) => indoorGraph[node]);
+  $("#routePath").setAttribute("d", points.map((point, index) => `${index ? "L" : "M"}${point.x} ${point.y}`).join(" "));
+  const end = indoorGraph[destination.node];
+  $("#destinationPin").setAttribute("transform", `translate(${end.x} ${end.y})`);
+  $("#destinationLabel").setAttribute("transform", `translate(${Math.max(20, end.x - 52)} ${Math.max(30, end.y - 55)})`);
+  $(".gate-label text").textContent = destinationName.replace("禄口机场", "");
+  const distance = Math.max(20, Math.round(activeIndoorRoute.slice(1).reduce((sum, node, index) => sum + nodeDistance(activeIndoorRoute[index], node), 0) * 2.4 / 10) * 10);
+  const minutes = Math.max(1, Math.ceil(distance / 75));
+  $(".route-time strong").textContent = minutes;
+  $(".route-card > div:nth-child(2) > span").textContent = language === "zh" ? `步行至 ${destinationName}` : `Walk to ${destinationName}`;
+  $(".route-card small b").textContent = `${distance} m`;
+  $(".route-card small span").textContent = detail || (destination.floor === "3F" ? "虚拟路网已规划" : `乘电梯前往 ${destination.floor}`);
+  $("#startIndoorNavigation").textContent = "▶";
+  $("#instructionTitle").textContent = "路线规划完成";
+  $("#instructionDetail").textContent = `共经过 ${Math.max(0, activeIndoorRoute.length - 1)} 个导航节点`;
+  $("#turnInstruction").classList.add("show");
+  switchFloor(destination.floor);
+}
+
+function stopIndoorNavigation() {
+  clearInterval(indoorNavigationTimer);
+  indoorNavigationTimer = null;
+  $("#terminalMap").classList.remove("navigating");
+  if ($("#startIndoorNavigation")) $("#startIndoorNavigation").textContent = "▶";
+}
+
+function startIndoorNavigation() {
+  if (indoorNavigationTimer) {
+    stopIndoorNavigation();
+    return;
+  }
+  if (activeIndoorRoute.length < 2) {
+    showToast(language === "zh" ? "您已到达目的地" : "You have arrived");
+    return;
+  }
+  let step = 0;
+  $("#terminalMap").classList.add("navigating");
+  $("#startIndoorNavigation").textContent = "Ⅱ";
+  $("#positionMode").textContent = language === "zh" ? "BLE + Wi-Fi 定位跟随中" : "BLE + Wi-Fi tracking";
+  indoorNavigationTimer = setInterval(() => {
+    step += 1;
+    const node = activeIndoorRoute[step];
+    const point = indoorGraph[node];
+    currentIndoorNode = node;
+    $("#youPin").setAttribute("transform", `translate(${point.x} ${point.y})`);
+    const remainingNodes = activeIndoorRoute.slice(step);
+    const remaining = Math.round(remainingNodes.slice(1).reduce((sum, item, index) => sum + nodeDistance(remainingNodes[index], item), 0) * 2.4 / 10) * 10;
+    $(".route-card small b").textContent = `${remaining} m`;
+    $("#positionAccuracy").textContent = `定位精度约 ±${(2.6 + Math.random() * 1.8).toFixed(1)}m`;
+    $("#turnIcon").textContent = step % 3 === 0 ? "↱" : "↑";
+    $("#instructionTitle").textContent = remaining ? (step % 3 === 0 ? "前方路口右转" : "沿当前通道直行") : "您已到达目的地";
+    $("#instructionDetail").textContent = remaining ? `继续前行 ${remaining} 米` : "室内导航已结束";
+    if (step >= activeIndoorRoute.length - 1) {
+      stopIndoorNavigation();
+      $(".route-time strong").textContent = "0";
+      showToast(language === "zh" ? "已到达目的地" : "Destination reached");
+    }
+  }, 1100);
+}
 
 function renderMerchants() {
   const query = $("#shopSearch").value.trim().toLowerCase();
@@ -91,21 +227,7 @@ function bindMerchantActions() {
     activeRealDestination = isMetro ? "metro" : "airport";
     showToast(language === "zh" ? `已规划前往「${button.dataset.navShop}」的路线` : `Route to ${button.dataset.navShop} ready`);
     $("#navigation").scrollIntoView({ behavior: "smooth" });
-    $("#routePath").style.stroke = "#0d5366";
-    if (isMetro) {
-      $(".route-time strong").textContent = "6";
-      $(".route-card > div:nth-child(2) > span").textContent = language === "zh" ? "步行至禄口机场地铁站" : "Walk to Lukou Airport Metro";
-      $(".route-card small b").textContent = "420 m";
-      $(".route-card small span").textContent = language === "zh" ? "前往 B1 交通中心 · S1 号线" : "B1 Transport Center · Line S1";
-      $(".gate-label text").textContent = language === "zh" ? "地铁 S1" : "Metro S1";
-    } else {
-      $(".route-time strong").textContent = "5";
-      $(".route-card > div:nth-child(2) > span").textContent = language === "zh" ? `步行至 ${button.dataset.navShop}` : `Walk to ${button.dataset.navShop}`;
-      $(".route-card small b").textContent = "300 m";
-      $(".route-card small span").textContent = language === "zh" ? "机场室内路线" : "Airport indoor route";
-      $(".gate-label text").textContent = language === "zh" ? "目的地" : "Destination";
-    }
-    setTimeout(() => $("#routePath").style.stroke = "", 1800);
+    planIndoorRoute(button.dataset.navShop, isMetro ? "乘电梯前往 B1 · S1 号线" : "虚拟室内路网已规划");
   }));
   $$("[data-review-shop]").forEach((button) => button.addEventListener("click", () => {
     $("#modalShopName").textContent = button.dataset.reviewShop;
@@ -137,11 +259,7 @@ function setFlight(code) {
   $("#flightTime").textContent = flight.time;
   $("#flightGate").textContent = flight.gate;
   $("#boardingTime").textContent = flight.boarding;
-  $(".gate-label text").textContent = `Gate ${flight.gate}`;
-  $(".route-time strong").textContent = flight.minutes;
-  $(".route-card small b").textContent = `${flight.distance} m`;
-  $(".route-card small span").textContent = language === "zh" ? "途经国内安检" : "via Domestic Security";
-  $(".route-card > div:nth-child(2) > span").textContent = language === "zh" ? `步行至 ${flight.gate} 号登机口` : `Walk to Gate ${flight.gate}`;
+  planIndoorRoute(`Gate ${flight.gate}`, language === "zh" ? "途经国内安检" : "via Domestic Security");
   showToast(language === "zh" ? `${normalized} 航班路线已更新` : `${normalized} route updated`);
   $("#routePath").style.animation = "none";
   requestAnimationFrame(() => $("#routePath").style.animation = "");
@@ -192,7 +310,15 @@ function locateUser() {
   );
 }
 $("#locationButton").addEventListener("click", locateUser);
-$("#recenterButton").addEventListener("click", locateUser);
+$("#recenterButton").addEventListener("click", () => {
+  stopIndoorNavigation();
+  currentIndoorNode = "A";
+  $("#youPin").setAttribute("transform", `translate(${indoorGraph.A.x} ${indoorGraph.A.y})`);
+  $("#positionMode").textContent = language === "zh" ? "BLE + Wi-Fi 模拟定位" : "BLE + Wi-Fi simulated positioning";
+  $("#positionAccuracy").textContent = language === "zh" ? "定位精度约 ±3.2m" : "Accuracy approx. ±3.2m";
+  setFlight(activeFlight);
+  showToast(language === "zh" ? "已模拟重新定位：3F 出发大厅" : "Simulated location reset: 3F Departure Hall");
+});
 
 function openAmapNavigation(destinationKey) {
   const destination = realDestinations[destinationKey] || realDestinations.airport;
@@ -207,10 +333,15 @@ function openAmapNavigation(destinationKey) {
 }
 
 $$("[data-amap-destination]").forEach((button) => button.addEventListener("click", () => openAmapNavigation(button.dataset.amapDestination)));
-$("#openRealNavigation").addEventListener("click", () => openAmapNavigation(activeRealDestination));
+$("#startIndoorNavigation").addEventListener("click", startIndoorNavigation);
+$$(".floor-switch button").forEach((button) => button.addEventListener("click", () => {
+  switchFloor(button.dataset.floor);
+  showToast(language === "zh" ? `正在查看 T2 · ${button.dataset.floor} 虚拟楼层` : `Viewing virtual T2 · ${button.dataset.floor}`);
+}));
 
 $("#modalClose").addEventListener("click", () => $("#reviewModal").classList.remove("open"));
 $("#reviewModal").addEventListener("click", (event) => { if (event.target === $("#reviewModal")) $("#reviewModal").classList.remove("open"); });
 $("#openMiniProgram").addEventListener("click", () => showToast(language === "zh" ? "正在唤起机场服务小程序…" : "Opening airport mini program…"));
 
 renderMerchants();
+planIndoorRoute("Gate 32", "途经国内安检");
