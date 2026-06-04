@@ -42,6 +42,19 @@ const indoorDestinations = {
   "苏味集": { node: "F", floor: "3F" }
 };
 
+const shopReviews = {
+  default: [
+    { user: "航旅用户 2281", stars: 5, text: "位置很好找，服务速度快，赶飞机时也不用排很久。" },
+    { user: "南京出发", stars: 5, text: "商品选择丰富，店员介绍很清楚，整体体验不错。" },
+    { user: "云端旅客", stars: 4, text: "距离登机口不远，价格和机场内其他门店差不多。" }
+  ],
+  "金陵名小吃": [
+    { user: "一碗热汤", stars: 5, text: "出发前吃一碗鸭血粉丝汤很满足，出餐快，距离登机口也近。" },
+    { user: "苏A旅行者", stars: 5, text: "盐水鸭味道很南京，打包带上飞机也方便。" },
+    { user: "早班机乘客", stars: 4, text: "早上营业很及时，汤很热，座位稍微少了一些。" }
+  ]
+};
+
 const merchants = [
   { name: "禄口机场地铁站", nameEn: "Lukou Airport Metro Station", category: "transit", symbol: "M", location: "T2 · B1 · 交通中心", locationEn: "T2 · B1 · Transport Center", product: "地铁 S1 号线 · 往南京南站", productEn: "Metro Line S1 · To Nanjing South", rating: "首班 06:00", reviews: 0, discount: "约 6 分钟到达", discountEn: "6 min walk", isMetro: true },
   { name: "中免免税", nameEn: "CDF Duty Free", category: "dutyfree", symbol: "免", location: "T2 · 3F · 国际出发", locationEn: "T2 · 3F · International Departures", product: "国际香化 · 酒水精品", productEn: "Beauty · Wine & Spirits", rating: "4.8", reviews: 428, discount: "精选商品 8 折", discountEn: "20% OFF selected" },
@@ -87,6 +100,8 @@ let activeRealDestination = "airport";
 let currentIndoorNode = "A";
 let activeIndoorRoute = [];
 let indoorNavigationTimer = null;
+let selectedReviewStars = 5;
+let activeReviewShop = "";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -230,10 +245,29 @@ function bindMerchantActions() {
     planIndoorRoute(button.dataset.navShop, isMetro ? "乘电梯前往 B1 · S1 号线" : "虚拟室内路网已规划");
   }));
   $$("[data-review-shop]").forEach((button) => button.addEventListener("click", () => {
-    $("#modalShopName").textContent = button.dataset.reviewShop;
-    $("#reviewModal").classList.add("open");
-    $("#reviewModal").setAttribute("aria-hidden", "false");
+    openReviews(button.dataset.reviewShop);
   }));
+}
+
+function renderReviewList(shopName) {
+  const reviews = shopReviews[shopName] || shopReviews.default;
+  $("#reviewList").innerHTML = reviews.map((review) => `
+    <article class="review-item">
+      <header><strong>${review.user}</strong><span>${"★".repeat(review.stars)}${"☆".repeat(5 - review.stars)}</span></header>
+      <p>${review.text}</p>
+    </article>
+  `).join("");
+}
+
+function openReviews(shopName) {
+  activeReviewShop = shopName;
+  const merchant = merchants.find((item) => item.name === shopName);
+  $("#modalShopName").textContent = language === "zh" ? merchant.name : merchant.nameEn;
+  $("#modalRating").textContent = merchant.rating;
+  $("#modalReviewCount").textContent = language === "zh" ? `${merchant.reviews} 条评价` : `${merchant.reviews} reviews`;
+  renderReviewList(shopName);
+  $("#reviewModal").classList.add("open");
+  $("#reviewModal").setAttribute("aria-hidden", "false");
 }
 
 function showToast(message) {
@@ -341,7 +375,26 @@ $$(".floor-switch button").forEach((button) => button.addEventListener("click", 
 
 $("#modalClose").addEventListener("click", () => $("#reviewModal").classList.remove("open"));
 $("#reviewModal").addEventListener("click", (event) => { if (event.target === $("#reviewModal")) $("#reviewModal").classList.remove("open"); });
-$("#openMiniProgram").addEventListener("click", () => showToast(language === "zh" ? "正在唤起机场服务小程序…" : "Opening airport mini program…"));
+$("#starInput").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-star]");
+  if (!button) return;
+  selectedReviewStars = Number(button.dataset.star);
+  $$("#starInput button").forEach((item) => item.classList.toggle("active", Number(item.dataset.star) <= selectedReviewStars));
+});
+$("#reviewForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const text = $("#reviewText").value.trim();
+  if (!text) {
+    showToast(language === "zh" ? "请先填写评价内容" : "Please write your review");
+    return;
+  }
+  if (!shopReviews[activeReviewShop]) shopReviews[activeReviewShop] = [...shopReviews.default];
+  shopReviews[activeReviewShop].unshift({ user: "网页访客", stars: selectedReviewStars, text });
+  $("#reviewText").value = "";
+  renderReviewList(activeReviewShop);
+  showToast(language === "zh" ? "评价已发布在当前网页" : "Review posted on this webpage");
+});
+$$("#starInput button").forEach((item) => item.classList.toggle("active", Number(item.dataset.star) <= selectedReviewStars));
 
 renderMerchants();
 planIndoorRoute("Gate 32", "途经国内安检");

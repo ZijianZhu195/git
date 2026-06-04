@@ -238,11 +238,23 @@
   <div class="modal-backdrop" id="reviewModal" aria-hidden="true">
     <div class="review-modal">
       <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
-      <span class="review-app">小程序点评</span>
+      <span class="review-app">网页内商户评价</span>
       <h3 id="modalShopName">金陵名小吃</h3>
-      <div class="review-score"><strong>4.8</strong><span>★★★★★</span><small>328 条真实评价</small></div>
-      <blockquote>“出发前吃一碗鸭血粉丝汤很满足，出餐快，距离登机口也近。”</blockquote>
-      <button class="primary-wide" id="openMiniProgram">打开小程序查看全部点评</button>
+      <div class="review-score"><strong id="modalRating">4.8</strong><span>★★★★★</span><small id="modalReviewCount">328 条评价</small></div>
+      <div class="rating-bars">
+        <div><span>5星</span><i><b style="width: 76%"></b></i><small>76%</small></div>
+        <div><span>4星</span><i><b style="width: 18%"></b></i><small>18%</small></div>
+        <div><span>3星及以下</span><i><b style="width: 6%"></b></i><small>6%</small></div>
+      </div>
+      <div class="review-list" id="reviewList"></div>
+      <form class="review-form" id="reviewForm">
+        <strong>写评价</strong>
+        <div class="star-input" id="starInput" aria-label="选择评分">
+          <button type="button" data-star="1">★</button><button type="button" data-star="2">★</button><button type="button" data-star="3">★</button><button type="button" data-star="4">★</button><button type="button" data-star="5">★</button>
+        </div>
+        <textarea id="reviewText" rows="3" placeholder="分享你的真实体验…"></textarea>
+        <button class="primary-wide" type="submit">在网页内发布评价</button>
+      </form>
     </div>
   </div>
 
