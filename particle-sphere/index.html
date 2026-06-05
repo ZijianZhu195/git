@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hand Particle Sphere</title>
+  <title>Gesture Particle Morph</title>
   <style>
     * { box-sizing: border-box; }
     :root { color-scheme: dark; font-family: Inter, "Segoe UI", system-ui, sans-serif; }
     body {
-      margin: 0;
-      overflow: hidden;
-      color: #fff;
+      margin: 0; overflow: hidden; color: #fff;
       background:
         radial-gradient(circle at 50% 50%, rgba(50, 70, 210, .22), transparent 42%),
         radial-gradient(circle at 18% 20%, rgba(0, 245, 255, .12), transparent 32%),
@@ -23,75 +21,38 @@
     #scene { position: fixed; inset: 0; width: 100%; height: 100%; }
     .intro { position: fixed; top: 24px; left: 26px; pointer-events: none; }
     .intro p {
-      margin: 0 0 7px;
-      color: #8ca4ff;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .22em;
-      text-transform: uppercase;
+      margin: 0 0 7px; color: #8ca4ff; font-size: 11px;
+      font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
     }
     .intro h1 { margin: 0; font-size: clamp(24px, 3.2vw, 42px); letter-spacing: -.06em; }
     .intro span { display: block; margin-top: 8px; color: rgba(255,255,255,.5); font-size: 12px; }
     .camera-wrap {
-      position: fixed;
-      right: 22px;
-      top: 22px;
-      width: min(250px, 30vw);
-      aspect-ratio: 4 / 3;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: 18px;
-      background: rgba(8,10,20,.76);
-      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      position: fixed; right: 22px; top: 22px; width: min(250px, 30vw); aspect-ratio: 4 / 3;
+      overflow: hidden; border: 1px solid rgba(255,255,255,.13); border-radius: 18px;
+      background: rgba(8,10,20,.76); box-shadow: 0 20px 60px rgba(0,0,0,.45);
     }
     video { width: 100%; height: 100%; object-fit: cover; opacity: .5; transform: scaleX(-1); }
     #handOverlay { position: absolute; inset: 0; width: 100%; height: 100%; }
     .status {
-      position: absolute;
-      left: 10px;
-      bottom: 10px;
-      padding: 5px 8px;
-      border-radius: 20px;
-      background: rgba(0,0,0,.5);
-      color: rgba(255,255,255,.82);
-      font-size: 10px;
-      letter-spacing: .08em;
+      position: absolute; left: 10px; bottom: 10px; padding: 5px 8px; border-radius: 20px;
+      background: rgba(0,0,0,.5); color: rgba(255,255,255,.82); font-size: 10px; letter-spacing: .08em;
     }
     button {
-      position: fixed;
-      left: 50%;
-      bottom: 28px;
-      transform: translateX(-50%);
-      padding: 12px 20px;
-      border: 1px solid rgba(126,157,255,.45);
-      border-radius: 99px;
-      background: rgba(73,98,190,.22);
-      backdrop-filter: blur(14px);
-      color: #e5eaff;
-      cursor: pointer;
+      position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+      padding: 12px 20px; border: 1px solid rgba(126,157,255,.45); border-radius: 99px;
+      background: rgba(73,98,190,.22); backdrop-filter: blur(14px); color: #e5eaff; cursor: pointer;
       box-shadow: 0 10px 35px rgba(0,0,0,.35);
     }
     button:hover { background: rgba(73,98,190,.38); }
     button:disabled { cursor: wait; opacity: .75; }
     .meter {
-      position: fixed;
-      left: 26px;
-      bottom: 28px;
-      width: 150px;
-      height: 3px;
-      overflow: hidden;
-      border-radius: 4px;
-      background: rgba(255,255,255,.1);
+      position: fixed; left: 26px; bottom: 28px; width: 150px; height: 3px;
+      overflow: hidden; border-radius: 4px; background: rgba(255,255,255,.1);
     }
     .meter div { width: 50%; height: 100%; background: #8ca4ff; transition: width .08s linear; }
     .version {
-      position: fixed;
-      right: 22px;
-      bottom: 22px;
-      color: rgba(255,255,255,.42);
-      font-size: 11px;
-      letter-spacing: .08em;
-      pointer-events: none;
+      position: fixed; right: 22px; bottom: 22px; color: rgba(255,255,255,.42);
+      font-size: 11px; letter-spacing: .08em; pointer-events: none;
     }
     @media (max-width: 650px) {
       .camera-wrap { width: 145px; right: 12px; top: 12px; }
@@ -104,8 +65,8 @@
   <canvas id="scene"></canvas>
   <section class="intro">
     <p>Hand Tracking Experience</p>
-    <h1>波浪能量粒子球</h1>
-    <span>左右转手控制旋转 · 前后移动控制景深 · 张开手掌全屏爆散</span>
+    <h1>手势变形粒子秀</h1>
+    <span>1指爱心 · 2指方体 · 3指星云爆炸 · 4指科技几何体</span>
   </section>
   <div class="camera-wrap">
     <video id="camera" playsinline muted></video>
@@ -113,7 +74,7 @@
     <div class="status" id="status">CAMERA OFF</div>
   </div>
   <div class="meter"><div id="meterFill"></div></div>
-  <div class="version">NEBULA WAVE v3 · 2026-06-05</div>
+  <div class="version">GESTURE MORPH v4 · 2026-06-05</div>
   <button id="cameraButton">开启摄像头与手势识别</button>
 
   <script type="module">
@@ -130,6 +91,8 @@
     const meterFill = document.querySelector("#meterFill");
 
     const PARTICLE_COUNT = 4200;
+    const BASE_RADIUS = 400;
+    const MODE_LABELS = ["WAVE SPHERE", "HEART", "CUBE", "NEBULA BURST", "TECH GEOMETRY"];
     let width = innerWidth;
     let height = innerHeight;
     let dpr = 1;
@@ -138,25 +101,20 @@
     let depthBase = 0;
 
     const sphere = {
-      x: innerWidth / 2,
-      y: innerHeight / 2,
-      radius: 420,
-      targetX: innerWidth / 2,
-      targetY: innerHeight / 2,
-      targetRadius: 420,
-      spread: 0,
-      targetSpread: 0,
-      turn: 0,
-      targetTurn: 0,
-      depth: 0,
-      targetDepth: 0,
-      spin: 0
+      x: innerWidth / 2, y: innerHeight / 2, radius: BASE_RADIUS,
+      targetX: innerWidth / 2, targetY: innerHeight / 2, targetRadius: BASE_RADIUS,
+      spread: 0, targetSpread: 0,
+      turn: 0, targetTurn: 0,
+      depth: 0, targetDepth: 0,
+      spin: 0,
+      mode: 0, targetMode: 0, morph: 1
     };
 
     const particles = Array.from({ length: PARTICLE_COUNT }, (_, index) => {
       const phi = Math.acos(1 - 2 * (index + .5) / PARTICLE_COUNT);
       const theta = Math.PI * (1 + Math.sqrt(5)) * index;
       return {
+        index, theta, phi,
         ox: Math.sin(phi) * Math.cos(theta),
         oy: Math.cos(phi),
         oz: Math.sin(phi) * Math.sin(theta),
@@ -182,19 +140,21 @@
     };
 
     function resize() {
-      width = innerWidth;
-      height = innerHeight;
-      dpr = Math.min(devicePixelRatio || 1, 2);
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
+      width = innerWidth; height = innerHeight; dpr = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = width * dpr; canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      overlay.width = overlay.clientWidth * dpr;
-      overlay.height = overlay.clientHeight * dpr;
+      overlay.width = overlay.clientWidth * dpr; overlay.height = overlay.clientHeight * dpr;
       octx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (!handLandmarker) {
         sphere.x = sphere.targetX = width / 2;
         sphere.y = sphere.targetY = height / 2;
       }
+    }
+
+    function countFingers(hand) {
+      return [[8, 6], [12, 10], [16, 14], [20, 18]].filter(([tip, pip]) =>
+        distance(hand[tip], hand[0]) > distance(hand[pip], hand[0]) * 1.16
+      ).length;
     }
 
     function updateHand(time) {
@@ -206,10 +166,11 @@
 
       if (!hand) {
         status.textContent = "SHOW YOUR HAND";
-        sphere.targetRadius = 420;
+        sphere.targetRadius = BASE_RADIUS;
         sphere.targetSpread = 0;
         sphere.targetTurn = 0;
         sphere.targetDepth = 0;
+        sphere.targetMode = 0;
         return;
       }
 
@@ -223,21 +184,20 @@
       if (!depthBase) depthBase = palmSize;
       depthBase += (palmSize - depthBase) * .012;
 
-      const opennessRaw = [4, 8, 12, 16, 20]
-        .reduce((sum, id) => sum + distance(hand[id], hand[0]) / palmSize, 0) / 5;
-      const openness = clamp01((opennessRaw - 1.12) / 1.5);
-      const openAmount = smoothstep(.48, .76, openness);
+      const fingerCount = countFingers(hand);
+      const targetMode = fingerCount >= 1 && fingerCount <= 4 ? fingerCount : 0;
       const palmRoll = Math.atan2(hand[17].y - hand[5].y, hand[17].x - hand[5].x);
       const depthAmount = clamp((palmSize / depthBase - 1) * 2.6);
 
       sphere.targetX = (1 - palm.x) * width;
       sphere.targetY = palm.y * height;
-      sphere.targetRadius = 420 + openAmount * 120;
-      sphere.targetSpread = openAmount;
+      sphere.targetRadius = targetMode === 3 ? BASE_RADIUS + 90 : BASE_RADIUS;
+      sphere.targetSpread = targetMode === 3 ? 1 : 0;
+      sphere.targetMode = targetMode;
       sphere.targetTurn = clamp(palmRoll / .75);
       sphere.targetDepth = -depthAmount;
-      meterFill.style.width = `${Math.round(openness * 100)}%`;
-      status.textContent = openAmount > .65 ? "OPEN · EXPLOSION" : "HAND · WAVE SPHERE";
+      meterFill.style.width = `${fingerCount * 25}%`;
+      status.textContent = `${fingerCount} FINGER · ${MODE_LABELS[targetMode]}`;
     }
 
     function drawHand(hand) {
@@ -255,6 +215,38 @@
       }
     }
 
+    function shapePoint(p, mode, time) {
+      if (mode === 1) {
+        const t = p.theta;
+        const x = 16 * Math.pow(Math.sin(t), 3) / 18;
+        const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 18;
+        const z = (p.nebulaBand - .5) * .32 + Math.sin(t * 3 + time * .001) * .06;
+        return { x, y, z };
+      }
+      if (mode === 2) {
+        const face = p.index % 6;
+        const u = ((p.index * 37) % 101) / 50.5 - 1;
+        const v = ((p.index * 61) % 101) / 50.5 - 1;
+        const coords = [
+          [1, u, v], [-1, u, v], [u, 1, v], [u, -1, v], [u, v, 1], [u, v, -1]
+        ][face];
+        return { x: coords[0] * .72, y: coords[1] * .72, z: coords[2] * .72 };
+      }
+      if (mode === 4) {
+        const bands = 5;
+        const band = p.index % bands;
+        const a = p.theta + time * (.0006 + band * .00016);
+        const r = .36 + band * .095 + Math.sin(p.theta * 8 + time * .002) * .035;
+        const y = (band - 2) * .2 + Math.sin(a * 3) * .045;
+        return {
+          x: Math.cos(a) * r,
+          y,
+          z: Math.sin(a) * r
+        };
+      }
+      return { x: p.ox, y: p.oy, z: p.oz };
+    }
+
     function drawSphere(time) {
       sphere.x += (sphere.targetX - sphere.x) * .28;
       sphere.y += (sphere.targetY - sphere.y) * .28;
@@ -264,6 +256,17 @@
       sphere.depth += (sphere.targetDepth - sphere.depth) * .28;
       sphere.spin += .004 + sphere.turn * .055;
 
+      if (sphere.mode !== sphere.targetMode) {
+        sphere.morph -= .16;
+        if (sphere.morph <= 0) {
+          sphere.mode = sphere.targetMode;
+          sphere.morph = 0;
+        }
+      } else {
+        sphere.morph += (1 - sphere.morph) * .18;
+      }
+      sphere.morph = clamp01(sphere.morph);
+
       const depthScale = 1 + sphere.depth * .32;
       const rotation = time * .00025 + sphere.spin;
       const innerRotation = -time * .00055 - sphere.spin * .55;
@@ -271,6 +274,7 @@
       const sin = Math.sin(rotation);
       const innerCos = Math.cos(innerRotation);
       const innerSin = Math.sin(innerRotation);
+      const mode = sphere.mode;
 
       const aura = ctx.createRadialGradient(
         sphere.x, sphere.y, sphere.radius * .05,
@@ -290,18 +294,26 @@
         const isInner = p.layer === 0;
         const rotationCos = isInner ? innerCos : cos;
         const rotationSin = isInner ? innerSin : sin;
-        const x = p.ox * rotationCos - p.oz * rotationSin;
-        const z = p.ox * rotationSin + p.oz * rotationCos;
-        const layerScale = isInner ? .52 : 1;
-        const waveA = Math.sin(time * .0035 + p.oy * 9 + p.wobble);
+        const baseX = p.ox * rotationCos - p.oz * rotationSin;
+        const baseZ = p.ox * rotationSin + p.oz * rotationCos;
+        const baseY = p.oy;
+        const target = shapePoint(p, mode, time);
+        const shapeX = target.x * rotationCos - target.z * rotationSin;
+        const shapeZ = target.x * rotationSin + target.z * rotationCos;
+        const shapeY = target.y;
+        const mix = mode === 0 || mode === 3 ? 0 : sphere.morph;
+        const x = baseX + (shapeX - baseX) * mix;
+        const y = baseY + (shapeY - baseY) * mix;
+        const z = baseZ + (shapeZ - baseZ) * mix;
+        const layerScale = isInner && mode === 0 ? .52 : 1;
+        const waveA = Math.sin(time * .0035 + y * 9 + p.wobble);
         const waveB = Math.sin(time * .0025 + x * 7 - z * 5 + p.wobble * .45);
         const wave = (waveA * .72 + waveB * .48) * (1 - sphere.spread);
-        const pulse = 1 + wave * (isInner ? .11 : .24) +
-          Math.sin(time * (isInner ? .003 : .0014) + p.wobble) * (isInner ? .035 : .012);
+        const pulse = 1 + wave * (mode === 0 ? (isInner ? .11 : .24) : .08);
         const depth = (z + 1) / 2;
         const perspective = Math.max(.55, 1 + (z * .18 + sphere.depth * .2) * (1 - sphere.spread));
         const sphereX = sphere.x + x * sphere.radius * pulse * layerScale * depthScale * perspective;
-        const sphereY = sphere.y + p.oy * sphere.radius * pulse * layerScale * depthScale * perspective;
+        const sphereY = sphere.y + y * sphere.radius * pulse * layerScale * depthScale * perspective;
         const drift = Math.sin(time * .0005 + p.wobble) * (28 + sphere.spread * 180);
         const blastRadius = Math.hypot(width, height) * (1.4 + sphere.depth * .35) * p.blastPower;
         const cloudX = p.spreadX * width;
@@ -319,27 +331,32 @@
         const px = sphereX + (spreadX - sphereX) * nebulaEase;
         const py = sphereY + (spreadY - sphereY) * nebulaEase;
         const glow = p.size * (.72 + depth * 1.65 + sphere.spread * 1.9 + sphere.depth * .25) *
-          (isInner ? 1.28 : 1) * perspective;
+          (isInner ? 1.28 : 1) * perspective * (mode === 4 ? 1.4 : 1);
 
         ctx.beginPath();
         ctx.arc(px, py, glow, 0, Math.PI * 2);
         const nebulaHue = 190 + p.nebulaBand * 95 + Math.sin(time * .001 + p.wobble) * 24;
-        ctx.fillStyle = isInner
-          ? `hsla(${178 + depth * 32 + sphere.spread * 35}, 100%, ${65 + depth * 28}%, ${(.3 + depth * .7) * (1 - sphere.spread * .12)})`
-          : `hsla(${nebulaHue + Math.abs(wave) * 35}, 100%, ${54 + depth * 34}%, ${.2 + depth * .65 + sphere.spread * .12})`;
+        ctx.fillStyle = mode === 1
+          ? `hsla(${330 + depth * 18}, 100%, ${62 + depth * 28}%, ${.28 + depth * .72})`
+          : mode === 2
+            ? `hsla(${205 + depth * 60}, 100%, ${55 + depth * 30}%, ${.22 + depth * .7})`
+            : mode === 4
+              ? `hsla(${170 + p.nebulaBand * 130}, 100%, ${58 + depth * 32}%, ${.26 + depth * .72})`
+              : `hsla(${nebulaHue + Math.abs(wave) * 35}, 100%, ${54 + depth * 34}%, ${.2 + depth * .65 + sphere.spread * .12})`;
         ctx.fill();
       }
 
-      const ringAlpha = (1 - sphere.spread) * (.18 + Math.abs(sphere.turn) * .14);
+      const ringAlpha = mode === 3 ? 0 : (1 - sphere.spread) * (.18 + Math.abs(sphere.turn) * .14);
       ctx.strokeStyle = `rgba(108, 224, 255, ${ringAlpha})`;
-      ctx.lineWidth = 1;
-      for (let ring = 0; ring < 4; ring++) {
+      ctx.lineWidth = mode === 4 ? 1.5 : 1;
+      const ringCount = mode === 4 ? 7 : 4;
+      for (let ring = 0; ring < ringCount; ring++) {
         ctx.beginPath();
         ctx.ellipse(
           sphere.x, sphere.y,
           sphere.radius * depthScale * (1.08 + ring * .045),
           sphere.radius * depthScale * (.2 + ring * .03),
-          rotation * (2.2 + ring * .3) + sphere.turn * .9, 0, Math.PI * 2
+          rotation * (2.2 + ring * .3) + sphere.turn * .9 + ring * .28, 0, Math.PI * 2
         );
         ctx.stroke();
       }
