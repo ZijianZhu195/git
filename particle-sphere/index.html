@@ -113,7 +113,7 @@
     <div class="status" id="status">CAMERA OFF</div>
   </div>
   <div class="meter"><div id="meterFill"></div></div>
-  <div class="version">WAVE CONTROL v2 · 2026-06-05</div>
+  <div class="version">NEBULA WAVE v3 · 2026-06-05</div>
   <button id="cameraButton">开启摄像头与手势识别</button>
 
   <script type="module">
@@ -140,10 +140,10 @@
     const sphere = {
       x: innerWidth / 2,
       y: innerHeight / 2,
-      radius: 480,
+      radius: 420,
       targetX: innerWidth / 2,
       targetY: innerHeight / 2,
-      targetRadius: 480,
+      targetRadius: 420,
       spread: 0,
       targetSpread: 0,
       turn: 0,
@@ -167,6 +167,7 @@
         spreadY: Math.random(),
         blastAngle: Math.random() * Math.PI * 2,
         blastPower: .18 + Math.pow(Math.random(), .68) * 1.75,
+        nebulaBand: Math.random(),
         driftX: Math.random() * 2 - 1,
         driftY: Math.random() * 2 - 1
       };
@@ -205,7 +206,7 @@
 
       if (!hand) {
         status.textContent = "SHOW YOUR HAND";
-        sphere.targetRadius = 480;
+        sphere.targetRadius = 420;
         sphere.targetSpread = 0;
         sphere.targetTurn = 0;
         sphere.targetDepth = 0;
@@ -231,10 +232,10 @@
 
       sphere.targetX = (1 - palm.x) * width;
       sphere.targetY = palm.y * height;
-      sphere.targetRadius = 480 + openAmount * 600;
+      sphere.targetRadius = 420 + openAmount * 120;
       sphere.targetSpread = openAmount;
       sphere.targetTurn = clamp(palmRoll / .75);
-      sphere.targetDepth = depthAmount;
+      sphere.targetDepth = -depthAmount;
       meterFill.style.width = `${Math.round(openness * 100)}%`;
       status.textContent = openAmount > .65 ? "OPEN · EXPLOSION" : "HAND · WAVE SPHERE";
     }
@@ -273,14 +274,15 @@
 
       const aura = ctx.createRadialGradient(
         sphere.x, sphere.y, sphere.radius * .05,
-        sphere.x, sphere.y, sphere.radius * depthScale * (1.35 + sphere.spread)
+        sphere.x, sphere.y, sphere.radius * depthScale * (1.25 + sphere.spread * 2.8)
       );
-      aura.addColorStop(0, `rgba(80, 245, 255, ${(1 - sphere.spread) * .1})`);
-      aura.addColorStop(.45, `rgba(72, 104, 255, ${(1 - sphere.spread) * .045})`);
+      aura.addColorStop(0, `rgba(80, 245, 255, ${(1 - sphere.spread) * .11})`);
+      aura.addColorStop(.35, `rgba(72, 104, 255, ${(1 - sphere.spread) * .055})`);
+      aura.addColorStop(.7, `rgba(187, 70, 255, ${sphere.spread * .08})`);
       aura.addColorStop(1, "rgba(0, 0, 0, 0)");
       ctx.fillStyle = aura;
       ctx.beginPath();
-      ctx.arc(sphere.x, sphere.y, sphere.radius * depthScale * (1.35 + sphere.spread), 0, Math.PI * 2);
+      ctx.arc(sphere.x, sphere.y, sphere.radius * depthScale * (1.25 + sphere.spread * 2.8), 0, Math.PI * 2);
       ctx.fill();
 
       ctx.globalCompositeOperation = "lighter";
@@ -293,31 +295,38 @@
         const layerScale = isInner ? .52 : 1;
         const waveA = Math.sin(time * .0035 + p.oy * 9 + p.wobble);
         const waveB = Math.sin(time * .0025 + x * 7 - z * 5 + p.wobble * .45);
-        const wave = (waveA * .65 + waveB * .35) * (1 - sphere.spread);
-        const pulse = 1 + wave * (isInner ? .055 : .12) +
+        const wave = (waveA * .72 + waveB * .48) * (1 - sphere.spread);
+        const pulse = 1 + wave * (isInner ? .11 : .24) +
           Math.sin(time * (isInner ? .003 : .0014) + p.wobble) * (isInner ? .035 : .012);
         const depth = (z + 1) / 2;
         const perspective = Math.max(.55, 1 + (z * .18 + sphere.depth * .2) * (1 - sphere.spread));
         const sphereX = sphere.x + x * sphere.radius * pulse * layerScale * depthScale * perspective;
         const sphereY = sphere.y + p.oy * sphere.radius * pulse * layerScale * depthScale * perspective;
-        const drift = Math.sin(time * .0005 + p.wobble) * (28 + sphere.spread * 70);
-        const blastRadius = Math.hypot(width, height) * (1.15 + sphere.depth * .25) * p.blastPower;
+        const drift = Math.sin(time * .0005 + p.wobble) * (28 + sphere.spread * 180);
+        const blastRadius = Math.hypot(width, height) * (1.4 + sphere.depth * .35) * p.blastPower;
         const cloudX = p.spreadX * width;
         const cloudY = p.spreadY * height;
-        const blastX = sphere.x + Math.cos(p.blastAngle) * blastRadius;
-        const blastY = sphere.y + Math.sin(p.blastAngle) * blastRadius;
-        const spreadX = cloudX * .34 + blastX * .66 + p.driftX * drift;
-        const spreadY = cloudY * .34 + blastY * .66 + p.driftY * drift;
-        const px = sphereX + (spreadX - sphereX) * sphere.spread;
-        const py = sphereY + (spreadY - sphereY) * sphere.spread;
-        const glow = p.size * (.65 + depth * 1.65 + sphere.spread * .55 + sphere.depth * .25) *
+        const spiral = p.blastAngle + time * (.00022 + p.nebulaBand * .00038) + p.blastPower * 1.8;
+        const ribbon = Math.sin(p.nebulaBand * 22 + time * .0012) * Math.hypot(width, height) * .18;
+        const blastX = sphere.x + Math.cos(spiral) * blastRadius + Math.cos(spiral + Math.PI / 2) * ribbon;
+        const blastY = sphere.y + Math.sin(spiral) * blastRadius * (.55 + p.nebulaBand * .75) +
+          Math.sin(spiral + Math.PI / 2) * ribbon;
+        const noiseX = Math.sin(time * .0018 + p.wobble * 2.1) * width * .2;
+        const noiseY = Math.cos(time * .0016 + p.wobble * 1.7) * height * .2;
+        const spreadX = cloudX * .18 + blastX * .82 + p.driftX * drift + noiseX * sphere.spread;
+        const spreadY = cloudY * .18 + blastY * .82 + p.driftY * drift + noiseY * sphere.spread;
+        const nebulaEase = sphere.spread * sphere.spread * (3 - 2 * sphere.spread);
+        const px = sphereX + (spreadX - sphereX) * nebulaEase;
+        const py = sphereY + (spreadY - sphereY) * nebulaEase;
+        const glow = p.size * (.72 + depth * 1.65 + sphere.spread * 1.9 + sphere.depth * .25) *
           (isInner ? 1.28 : 1) * perspective;
 
         ctx.beginPath();
         ctx.arc(px, py, glow, 0, Math.PI * 2);
+        const nebulaHue = 190 + p.nebulaBand * 95 + Math.sin(time * .001 + p.wobble) * 24;
         ctx.fillStyle = isInner
-          ? `hsla(${178 + depth * 32}, 100%, ${65 + depth * 28}%, ${.3 + depth * .7})`
-          : `hsla(${225 + depth * 65 + Math.abs(wave) * 22}, 100%, ${52 + depth * 32}%, ${.18 + depth * .72})`;
+          ? `hsla(${178 + depth * 32 + sphere.spread * 35}, 100%, ${65 + depth * 28}%, ${(.3 + depth * .7) * (1 - sphere.spread * .12)})`
+          : `hsla(${nebulaHue + Math.abs(wave) * 35}, 100%, ${54 + depth * 34}%, ${.2 + depth * .65 + sphere.spread * .12})`;
         ctx.fill();
       }
 
