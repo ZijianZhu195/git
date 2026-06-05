@@ -10,14 +10,15 @@
     body {
       margin: 0;
       overflow: hidden;
+      color: #fff;
       background:
-        radial-gradient(circle at 50% 50%, rgba(40, 70, 190, .2), transparent 42%),
-        radial-gradient(circle at 18% 20%, rgba(0, 245, 255, .1), transparent 32%),
+        radial-gradient(circle at 50% 50%, rgba(50, 70, 210, .22), transparent 42%),
+        radial-gradient(circle at 18% 20%, rgba(0, 245, 255, .12), transparent 32%),
+        radial-gradient(circle at 82% 78%, rgba(178, 72, 255, .1), transparent 30%),
         linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
         #03040a;
-      background-size: auto, auto, 48px 48px, 48px 48px, auto;
-      color: #fff;
+      background-size: auto, auto, auto, 48px 48px, 48px 48px, auto;
     }
     #scene { position: fixed; inset: 0; width: 100%; height: 100%; }
     .intro { position: fixed; top: 24px; left: 26px; pointer-events: none; }
@@ -30,7 +31,7 @@
       text-transform: uppercase;
     }
     .intro h1 { margin: 0; font-size: clamp(24px, 3.2vw, 42px); letter-spacing: -.06em; }
-    .intro span { display: block; margin-top: 8px; color: rgba(255,255,255,.48); font-size: 12px; }
+    .intro span { display: block; margin-top: 8px; color: rgba(255,255,255,.5); font-size: 12px; }
     .camera-wrap {
       position: fixed;
       right: 22px;
@@ -94,8 +95,8 @@
   <canvas id="scene"></canvas>
   <section class="intro">
     <p>Hand Tracking Experience</p>
-    <h1>双层粒子球体</h1>
-    <span>张开手掌爆炸扩散 · 收手恢复正常球体</span>
+    <h1>波浪能量粒子球</h1>
+    <span>左右转手控制旋转 · 前后移动控制景深 · 张开手掌全屏爆散</span>
   </section>
   <div class="camera-wrap">
     <video id="camera" playsinline muted></video>
@@ -124,6 +125,7 @@
     let dpr = 1;
     let handLandmarker;
     let lastVideoTime = -1;
+    let depthBase = 0;
 
     const sphere = {
       x: innerWidth / 2,
@@ -133,7 +135,12 @@
       targetY: innerHeight / 2,
       targetRadius: 480,
       spread: 0,
-      targetSpread: 0
+      targetSpread: 0,
+      turn: 0,
+      targetTurn: 0,
+      depth: 0,
+      targetDepth: 0,
+      spin: 0
     };
 
     const particles = Array.from({ length: PARTICLE_COUNT }, (_, index) => {
@@ -149,16 +156,17 @@
         spreadX: Math.random(),
         spreadY: Math.random(),
         blastAngle: Math.random() * Math.PI * 2,
-        blastPower: .08 + Math.pow(Math.random(), .72) * 1.45,
+        blastPower: .18 + Math.pow(Math.random(), .68) * 1.75,
         driftX: Math.random() * 2 - 1,
         driftY: Math.random() * 2 - 1
       };
     });
 
     const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, (a.z || 0) - (b.z || 0));
-    const clamp = value => Math.max(0, Math.min(1, value));
+    const clamp = value => Math.max(-1, Math.min(1, value));
+    const clamp01 = value => Math.max(0, Math.min(1, value));
     const smoothstep = (from, to, value) => {
-      const t = clamp((value - from) / (to - from));
+      const t = clamp01((value - from) / (to - from));
       return t * t * (3 - 2 * t);
     };
 
@@ -189,6 +197,8 @@
         status.textContent = "SHOW YOUR HAND";
         sphere.targetRadius = 480;
         sphere.targetSpread = 0;
+        sphere.targetTurn = 0;
+        sphere.targetDepth = 0;
         return;
       }
 
@@ -199,17 +209,24 @@
       }), { x: 0, y: 0 });
 
       const palmSize = distance(hand[0], hand[9]) || .1;
+      if (!depthBase) depthBase = palmSize;
+      depthBase += (palmSize - depthBase) * .012;
+
       const opennessRaw = [4, 8, 12, 16, 20]
         .reduce((sum, id) => sum + distance(hand[id], hand[0]) / palmSize, 0) / 5;
-      const openness = clamp((opennessRaw - 1.12) / 1.5);
+      const openness = clamp01((opennessRaw - 1.12) / 1.5);
       const openAmount = smoothstep(.48, .76, openness);
+      const palmRoll = Math.atan2(hand[17].y - hand[5].y, hand[17].x - hand[5].x);
+      const depthAmount = clamp((palmSize / depthBase - 1) * 2.6);
 
       sphere.targetX = (1 - palm.x) * width;
       sphere.targetY = palm.y * height;
-      sphere.targetRadius = 480 + openAmount * 580;
+      sphere.targetRadius = 480 + openAmount * 600;
       sphere.targetSpread = openAmount;
+      sphere.targetTurn = clamp(palmRoll / .75);
+      sphere.targetDepth = depthAmount;
       meterFill.style.width = `${Math.round(openness * 100)}%`;
-      status.textContent = openAmount > .65 ? "OPEN · EXPLOSION" : "CLOSE · SPHERE";
+      status.textContent = openAmount > .65 ? "OPEN · EXPLOSION" : "HAND · WAVE SPHERE";
     }
 
     function drawHand(hand) {
@@ -232,13 +249,29 @@
       sphere.y += (sphere.targetY - sphere.y) * .28;
       sphere.radius += (sphere.targetRadius - sphere.radius) * .32;
       sphere.spread += (sphere.targetSpread - sphere.spread) * .24;
+      sphere.turn += (sphere.targetTurn - sphere.turn) * .34;
+      sphere.depth += (sphere.targetDepth - sphere.depth) * .28;
+      sphere.spin += .004 + sphere.turn * .055;
 
-      const rotation = time * .00025;
-      const innerRotation = -time * .00055;
+      const depthScale = 1 + sphere.depth * .32;
+      const rotation = time * .00025 + sphere.spin;
+      const innerRotation = -time * .00055 - sphere.spin * .55;
       const cos = Math.cos(rotation);
       const sin = Math.sin(rotation);
       const innerCos = Math.cos(innerRotation);
       const innerSin = Math.sin(innerRotation);
+
+      const aura = ctx.createRadialGradient(
+        sphere.x, sphere.y, sphere.radius * .05,
+        sphere.x, sphere.y, sphere.radius * depthScale * (1.35 + sphere.spread)
+      );
+      aura.addColorStop(0, `rgba(80, 245, 255, ${(1 - sphere.spread) * .1})`);
+      aura.addColorStop(.45, `rgba(72, 104, 255, ${(1 - sphere.spread) * .045})`);
+      aura.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = aura;
+      ctx.beginPath();
+      ctx.arc(sphere.x, sphere.y, sphere.radius * depthScale * (1.35 + sphere.spread), 0, Math.PI * 2);
+      ctx.fill();
 
       ctx.globalCompositeOperation = "lighter";
       for (const p of particles) {
@@ -248,40 +281,46 @@
         const x = p.ox * rotationCos - p.oz * rotationSin;
         const z = p.ox * rotationSin + p.oz * rotationCos;
         const layerScale = isInner ? .52 : 1;
-        const pulse = 1 + Math.sin(time * (isInner ? .003 : .0014) + p.wobble) * (isInner ? .045 : .018);
+        const waveA = Math.sin(time * .0035 + p.oy * 9 + p.wobble);
+        const waveB = Math.sin(time * .0025 + x * 7 - z * 5 + p.wobble * .45);
+        const wave = (waveA * .65 + waveB * .35) * (1 - sphere.spread);
+        const pulse = 1 + wave * (isInner ? .055 : .12) +
+          Math.sin(time * (isInner ? .003 : .0014) + p.wobble) * (isInner ? .035 : .012);
         const depth = (z + 1) / 2;
-        const sphereX = sphere.x + x * sphere.radius * pulse * layerScale;
-        const sphereY = sphere.y + p.oy * sphere.radius * pulse * layerScale;
-        const drift = Math.sin(time * .0005 + p.wobble) * 28;
-        const blastRadius = Math.hypot(width, height) * p.blastPower;
+        const perspective = Math.max(.55, 1 + (z * .18 + sphere.depth * .2) * (1 - sphere.spread));
+        const sphereX = sphere.x + x * sphere.radius * pulse * layerScale * depthScale * perspective;
+        const sphereY = sphere.y + p.oy * sphere.radius * pulse * layerScale * depthScale * perspective;
+        const drift = Math.sin(time * .0005 + p.wobble) * (28 + sphere.spread * 70);
+        const blastRadius = Math.hypot(width, height) * (1.15 + sphere.depth * .25) * p.blastPower;
         const cloudX = p.spreadX * width;
         const cloudY = p.spreadY * height;
         const blastX = sphere.x + Math.cos(p.blastAngle) * blastRadius;
         const blastY = sphere.y + Math.sin(p.blastAngle) * blastRadius;
-        const spreadX = cloudX * .4 + blastX * .6 + p.driftX * drift;
-        const spreadY = cloudY * .4 + blastY * .6 + p.driftY * drift;
+        const spreadX = cloudX * .34 + blastX * .66 + p.driftX * drift;
+        const spreadY = cloudY * .34 + blastY * .66 + p.driftY * drift;
         const px = sphereX + (spreadX - sphereX) * sphere.spread;
         const py = sphereY + (spreadY - sphereY) * sphere.spread;
-        const glow = p.size * (.65 + depth * 1.65 + sphere.spread * .35) * (isInner ? 1.25 : 1);
+        const glow = p.size * (.65 + depth * 1.65 + sphere.spread * .55 + sphere.depth * .25) *
+          (isInner ? 1.28 : 1) * perspective;
 
         ctx.beginPath();
         ctx.arc(px, py, glow, 0, Math.PI * 2);
         ctx.fillStyle = isInner
           ? `hsla(${178 + depth * 32}, 100%, ${65 + depth * 28}%, ${.3 + depth * .7})`
-          : `hsla(${225 + depth * 65}, 100%, ${52 + depth * 32}%, ${.18 + depth * .72})`;
+          : `hsla(${225 + depth * 65 + Math.abs(wave) * 22}, 100%, ${52 + depth * 32}%, ${.18 + depth * .72})`;
         ctx.fill();
       }
 
-      const ringAlpha = (1 - sphere.spread) * .2;
+      const ringAlpha = (1 - sphere.spread) * (.18 + Math.abs(sphere.turn) * .14);
       ctx.strokeStyle = `rgba(108, 224, 255, ${ringAlpha})`;
       ctx.lineWidth = 1;
-      for (let ring = 0; ring < 3; ring++) {
+      for (let ring = 0; ring < 4; ring++) {
         ctx.beginPath();
         ctx.ellipse(
           sphere.x, sphere.y,
-          sphere.radius * (1.08 + ring * .035),
-          sphere.radius * (.2 + ring * .025),
-          rotation * (2.2 + ring * .3), 0, Math.PI * 2
+          sphere.radius * depthScale * (1.08 + ring * .045),
+          sphere.radius * depthScale * (.2 + ring * .03),
+          rotation * (2.2 + ring * .3) + sphere.turn * .9, 0, Math.PI * 2
         );
         ctx.stroke();
       }
