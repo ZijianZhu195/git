@@ -92,7 +92,7 @@
 
     const PARTICLE_COUNT = 8400;
     const BASE_RADIUS = 400;
-    const MODE_LABELS = ["WAVE SPHERE", "HEART", "CUBE", "NEBULA BURST", "TECH GEOMETRY", "PHOTO"];
+    const MODE_LABELS = ["WAVE SPHERE", "HEART", "CUBE", "WAVE ORBIT", "TECH GEOMETRY", "PHOTO"];
     let width = innerWidth;
     let height = innerHeight;
     let dpr = 1;
@@ -235,8 +235,8 @@
 
       sphere.targetX = (1 - palm.x) * width;
       sphere.targetY = palm.y * height;
-      sphere.targetRadius = targetMode === 3 ? BASE_RADIUS + 90 : targetMode === 5 ? 360 : BASE_RADIUS;
-      sphere.targetSpread = targetMode === 3 ? 1 : 0;
+      sphere.targetRadius = targetMode === 5 ? 360 : BASE_RADIUS;
+      sphere.targetSpread = 0;
       sphere.targetMode = targetMode;
       sphere.targetTurn = targetMode === 5 ? 0 : clamp(palmRoll / .75);
       sphere.targetDepth = targetMode === 5 ? 0 : -depthAmount;
@@ -275,6 +275,18 @@
           [1, u, v], [-1, u, v], [u, 1, v], [u, -1, v], [u, v, 1], [u, v, -1]
         ][face];
         return { x: coords[0] * .72, y: coords[1] * .72, z: coords[2] * .72 };
+      }
+      if (mode === 3) {
+        const progress = p.index / PARTICLE_COUNT;
+        const turns = 2.35;
+        const a = progress * Math.PI * 2 * turns + time * .0017;
+        const wave = Math.sin(progress * Math.PI * 16 + time * .004 + p.wobble) * .16;
+        const r = .34 + progress * .54;
+        return {
+          x: Math.cos(a) * r,
+          y: Math.sin(progress * Math.PI * 10 + time * .003) * .2 + wave,
+          z: Math.sin(a) * r
+        };
       }
       if (mode === 4) {
         const bands = 5;
@@ -349,7 +361,7 @@
         const shapeX = target.x * rotationCos - target.z * rotationSin;
         const shapeZ = target.x * rotationSin + target.z * rotationCos;
         const shapeY = target.y;
-        const mix = mode === 0 || mode === 3 ? 0 : sphere.morph;
+        const mix = mode === 0 ? 0 : sphere.morph;
         const x = baseX + (shapeX - baseX) * mix;
         const y = baseY + (shapeY - baseY) * mix;
         const z = baseZ + (shapeZ - baseZ) * mix;
@@ -385,17 +397,6 @@
         ctx.beginPath();
         ctx.arc(px, py, glow, 0, Math.PI * 2);
         const nebulaHue = 190 + p.nebulaBand * 95 + Math.sin(time * .001 + p.wobble) * 24;
-        if (mode === 3 && sphere.spread > .15) {
-          const tail = 16 + explosionAge * 80 * p.blastPower;
-          ctx.strokeStyle = `hsla(${nebulaHue + 50}, 100%, 68%, ${.035 + explosionAge * .16})`;
-          ctx.lineWidth = Math.max(.35, glow * .42);
-          ctx.beginPath();
-          ctx.moveTo(px, py);
-          ctx.lineTo(px - Math.cos(spiral) * tail, py - Math.sin(spiral) * tail);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(px, py, glow, 0, Math.PI * 2);
-        }
         ctx.fillStyle = mode === 5 && photoReady
           ? `rgba(${p.photo.color[0]}, ${p.photo.color[1]}, ${p.photo.color[2]}, ${.48 + depth * .48})`
           : mode === 1
@@ -408,10 +409,10 @@
         ctx.fill();
       }
 
-      const ringAlpha = mode === 3 ? 0 : (1 - sphere.spread) * (.18 + Math.abs(sphere.turn) * .14);
+      const ringAlpha = (1 - sphere.spread) * (.18 + Math.abs(sphere.turn) * .14);
       ctx.strokeStyle = `rgba(108, 224, 255, ${ringAlpha})`;
       ctx.lineWidth = mode === 4 ? 1.5 : 1;
-      const ringCount = mode === 4 ? 7 : 4;
+      const ringCount = mode === 4 ? 7 : mode === 3 ? 2 : 4;
       for (let ring = 0; ring < ringCount; ring++) {
         ctx.beginPath();
         ctx.ellipse(
@@ -420,14 +421,6 @@
           sphere.radius * depthScale * (.2 + ring * .03),
           rotation * (2.2 + ring * .3) + sphere.turn * .9 + ring * .28, 0, Math.PI * 2
         );
-        ctx.stroke();
-      }
-      if (mode === 3 && sphere.spread > .08) {
-        const shock = sphere.radius * (1.2 + sphere.spread * 2.4);
-        ctx.strokeStyle = `rgba(120, 230, 255, ${(1 - Math.abs(sphere.spread - .55)) * .22})`;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(sphere.x, sphere.y, shock, 0, Math.PI * 2);
         ctx.stroke();
       }
       ctx.globalCompositeOperation = "source-over";
