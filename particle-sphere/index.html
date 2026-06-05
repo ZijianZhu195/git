@@ -84,6 +84,15 @@
       background: rgba(255,255,255,.1);
     }
     .meter div { width: 50%; height: 100%; background: #8ca4ff; transition: width .08s linear; }
+    .version {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      color: rgba(255,255,255,.42);
+      font-size: 11px;
+      letter-spacing: .08em;
+      pointer-events: none;
+    }
     @media (max-width: 650px) {
       .camera-wrap { width: 145px; right: 12px; top: 12px; }
       .intro { left: 16px; top: 18px; }
@@ -104,6 +113,7 @@
     <div class="status" id="status">CAMERA OFF</div>
   </div>
   <div class="meter"><div id="meterFill"></div></div>
+  <div class="version">WAVE CONTROL v2 · 2026-06-05</div>
   <button id="cameraButton">开启摄像头与手势识别</button>
 
   <script type="module">
