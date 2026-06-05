@@ -95,7 +95,7 @@
   <section class="intro">
     <p>Hand Tracking Experience</p>
     <h1>双层粒子球体</h1>
-    <span>握拳收缩 · 半开稳定 · 张开释放全屏粒子</span>
+    <span>张开手掌爆炸扩散 · 收手恢复正常球体</span>
   </section>
   <div class="camera-wrap">
     <video id="camera" playsinline muted></video>
@@ -202,17 +202,14 @@
       const opennessRaw = [4, 8, 12, 16, 20]
         .reduce((sum, id) => sum + distance(hand[id], hand[0]) / palmSize, 0) / 5;
       const openness = clamp((opennessRaw - 1.12) / 1.5);
-      const fistAmount = 1 - smoothstep(.12, .38, openness);
-      const openAmount = smoothstep(.62, .88, openness);
-      const normalAmount = smoothstep(.12, .46, openness);
+      const openAmount = smoothstep(.48, .76, openness);
 
       sphere.targetX = (1 - palm.x) * width;
       sphere.targetY = palm.y * height;
-      sphere.targetRadius = 30 + normalAmount * 450 + openAmount * 580;
+      sphere.targetRadius = 480 + openAmount * 580;
       sphere.targetSpread = openAmount;
       meterFill.style.width = `${Math.round(openness * 100)}%`;
-      status.textContent = fistAmount > .6 ? "FIST · COMPACT" :
-        openAmount > .65 ? "OPEN · RELEASE" : "HOLD · SPHERE";
+      status.textContent = openAmount > .65 ? "OPEN · EXPLOSION" : "CLOSE · SPHERE";
     }
 
     function drawHand(hand) {
